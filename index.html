@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Price Wordle | Nofrills Price Guessing Game</title>
+    <meta name="description" content="Play Price Wordle! Guess the price of Nofrills products and track your score. Inspired by Costcodle.">
+    <meta name="keywords" content="Nofrills, Price Wordle, grocery game, price guessing, wordle, buy me a coffee, costcodle, food, fun, challenge, game, web game">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="Price Wordle | Nofrills Price Guessing Game">
+    <meta property="og:description" content="Guess the price of Nofrills products in this fun web game. Inspired by Costcodle.">
+    <meta property="og:image" content="KnowFrills.svg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://knowfrills.jambles.fun/">
+    <link rel="icon" type="image/svg+xml" href="no-frills-icon.svg">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fee600; margin: 0; }
+        .header { text-align: center; margin-top: 40px; margin-bottom: 20px; }
+        .game-card { max-width: 420px; margin: 0 auto; background: #fff; padding: 32px 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; }
+        .product-img { width: 220px; height: 220px; object-fit: contain; border-radius: 12px; margin-bottom: 18px; background: #f2f2f2; }
+        .product-name { font-size: 1.25em; font-weight: 600; margin-bottom: 12px; text-align: center; }
+        .score { font-size: 1.1em; margin-bottom: 8px; color: #0077cc; }
+        .guess-form { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .guess-input { font-size: 1.1em; padding: 8px; width: 120px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #ccc; }
+        .guess-btn { background: #0077cc; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; margin-bottom: 8px; }
+        .guess-btn:hover { background: #005fa3; }
+        .skip-btn { background: #eee; color: #333; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; }
+        .skip-btn:hover { background: #ccc; }
+        .feedback { margin: 14px 0; font-size: 1.1em; color: #007700; min-height: 24px; }
+        .error { color: #bb2222; }
+        .guess-count { margin-bottom: 8px; color: #555; }
+        .footer { text-align: center; margin-top: 40px; margin-bottom: 40px; color: #888; font-size: 0.95em; }
+        .guess-boxes { display: flex; gap: 8px; margin-bottom: 12px; }
+        .guess-box { width: 48px; height: 48px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-weight: bold; color: #333; border: 2px solid #ccc; }
+        .guess-box.correct { background: #aaffaa; border-color: #007700; }
+        .guess-box.wrong { background: #ffcccc; border-color: #bb2222; }
+        .guess-box.higher { background: #ffe066; border-color: #ffb700; }
+        .guess-box.lower { background: #66b3ff; border-color: #0077cc; }
+        .buy-coffee { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; margin-top: 40px; }
+        .buy-coffee-btn { background: #fff; color: #222; border: 2px solid #bfae82; border-radius: 8px; padding: 8px 18px; font-size: 1.1em; font-weight: 600; display: flex; align-items: center; cursor: pointer; transition: background 0.2s; margin-left: 8px; }
+        .buy-coffee-btn:hover { background: #ffe066; }
+        .buy-coffee svg { height: 28px; width: 28px; margin-right: 8px; }
+        .reset-score-btn {
+            background: #da291c;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 8px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        .reset-score-btn:hover {
+            background: #b71c13;
+        }
+        .streak-count { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 6px 12px; font-size: 1.1em; z-index: 2; }
+        .streak-icon { margin-left: 8px; width: 24px; height: 24px; }
+    </style>
+</head>
+<body>
+<style>
+  .streak-swarm-container {
+    position: fixed;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .streak-swarm-icon {
+    position: absolute;
+    width: 2.2rem;
+    height: 2.2rem;
+    will-change: transform, opacity;
+    opacity: 0;
+    animation: streakSwarmAnim 0.7s linear forwards;
+  }
+  @keyframes streakSwarmAnim {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: var(--swarm-transform);
+    }
+  }
+</style>
+<div class="header">
+    <img src="KnowFrills.svg" alt="No Frills Logo" style="height:48px;">
+    <h1 style="margin:0; font-size:2em; color:#0077cc;">Price Wordle!</h1>
+    <button id="instructions-btn" style="margin-left:16px; background:#0077cc; color:#fff; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-size:1em;">How to Play</button>
+</div>
+<div class="game-card" style="position: relative;">
+    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+        <span id="streak-count" style="font-size:1.1em; color:#d32f2f; font-weight:600;">Streak: 0</span>
+        <img src="StreakIcon.svg" alt="Streak Icon" class="streak-icon" style="margin-left:8px; width:24px; height:24px;">
+    </div>
+    <div class="score">Score: <span id="score">0</span>/<span id="shown">0</span></div>
+    <div class="guess-count">Guesses left: <span id="guesses-left">5</span></div>
+    <div class="product-name" id="product-name">Loading...</div>
+    <img class="product-img" id="product-img" src="" alt="Product image">
+    <div class="guess-boxes" id="guess-boxes"></div>
+    <div class="feedback" id="feedback"></div>
+    <form class="guess-form" id="guess-form">
+        <input class="guess-input" type="number" step="0.01" min="0" id="guess" placeholder="Enter price" required>
+        <button class="guess-btn" type="submit">Submit Guess</button>
+        <button class="skip-btn" type="button" id="skip-btn">Skip</button>
+        <button class="reset-score-btn" id="reset-score-btn" style="margin-top:24px;">Reset Score</button>
+    </form>
+</div>
+<!-- Modal for enlarged image -->
+<div id="image-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+  <img id="modal-img" src="" alt="Large product image" style="max-width:90vw; max-height:90vh; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+</div>
+<!-- Modal for instructions -->
+<div id="instructions-modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; max-width:420px; width:90vw; padding:32px 24px; box-shadow:0 4px 24px rgba(0,0,0,0.18); position:relative;">
+    <button id="close-instructions" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.5em; cursor:pointer;">&times;</button>
+    <h2 style="margin-top:0;">How to Play</h2>
+    <p>Guess the price of the No Frills product. You have 5 guesses. After each guess, you'll get feedback if the correct price is higher or lower. Try to get as many in a row as you can!</p>
+    <div class="examples">
+      <p><strong>Examples</strong></p>
+      <div class="example">
+        <div class="row">
+          <span class="guess-box correct">$2.99</span>
+        </div>
+        <p>Your guess is within $0.50 of the actual price. <strong>Correct!</strong></p>
+      </div>
+      <div class="example">
+        <div class="row">
+          <span class="guess-box higher">$1.99</span>
+        </div>
+        <p>The actual price is <strong>higher</strong> than your guess.</p>
+      </div>
+      <div class="example">
+        <div class="row">
+          <span class="guess-box lower">$4.99</span>
+        </div>
+        <p>The actual price is <strong>lower</strong> than your guess.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="buy-coffee">
+    <button class="buy-coffee-btn" onclick="window.open('https://www.buymeacoffee.com/jambles', '_blank')">
+        <img src="coffee.svg" alt="Coffee" style="height:28px;width:28px;margin-right:8px;vertical-align:middle;">
+        Buy me a coffee!
+    </button>
+</div>
+<div class="footer">
+    Inspired by <a href="https://costcodle.com/" target="_blank">Costcodle</a> | Data: <a href="https://www.nofrills.ca/" target="_blank">No Frills</a>
+</div>
+<script>
+let products = [];
+let current = null;
+let guesses = 0;
+let score = localStorage.getItem('nofrills_score') ? parseInt(localStorage.getItem('nofrills_score')) : 0;
+let shown = localStorage.getItem('nofrills_shown') ? parseInt(localStorage.getItem('nofrills_shown')) : 0;
+let guessHistory = [];
+let streak = localStorage.getItem('nofrills_streak') ? parseInt(localStorage.getItem('nofrills_streak')) : 0;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const resetBtn = document.getElementById('reset-score-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset your score?')) {
+                if (confirm('This will erase your score. Are you REALLY sure?')) {
+                    score = 0;
+                    shown = 0;
+                    localStorage.setItem('nofrills_score', score);
+                    localStorage.setItem('nofrills_shown', shown);
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('shown').textContent = shown;
+                    document.getElementById('feedback').textContent = 'Score reset!';
+                }
+            }
+        });
+    }
+});
+
+// Load CSV
+async function loadCSV() {
+    try {
+        const response = await fetch('nofrills_all_products.csv');
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',');
+        products = lines.slice(1).map(line => {
+            const values = line.match(/(?:"([^"]*)")|([^,]+)/g).map(v => v.replace(/^"|"$/g, ''));
+            let obj = {};
+            headers.forEach((h, i) => obj[h.trim()] = values[i] ? values[i].trim() : '');
+            obj.price = parseFloat(obj.price);
+            obj.image_url = obj.image;
+            return obj;
+        });
+        pickProduct();
+    } catch (e) {
+        document.getElementById('feedback').textContent = 'Error loading products.';
+    }
+}
+
+function pickProduct() {
+    guesses = 0;
+    guessHistory = [];
+    shown++;
+    localStorage.setItem('nofrills_shown', shown);
+    document.getElementById('shown').textContent = shown;
+    document.getElementById('guesses-left').textContent = 5;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('guess').value = '';
+    document.getElementById('guess-boxes').innerHTML = '';
+    current = products[Math.floor(Math.random() * products.length)];
+    document.getElementById('product-name').textContent = current.name;
+    var img = document.getElementById('product-img');
+    img.src = current.image_url || current.image || '';
+    img.alt = current.name;
+}
+
+function renderGuessBoxes() {
+    const boxContainer = document.getElementById('guess-boxes');
+    boxContainer.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        let box = document.createElement('div');
+        box.className = 'guess-box';
+        if (guessHistory[i] !== undefined) {
+            const { value, result } = guessHistory[i];
+            box.textContent = value;
+            box.classList.add(result);
+        } else {
+            box.textContent = '';
+        }
+        boxContainer.appendChild(box);
+    }
+}
+
+function updateStreakDisplay() {
+    document.getElementById('streak-count').textContent = `Streak: ${streak}`;
+}
+
+function streakSwarm(count = 40) {
+  let container = document.getElementById('streak-swarm-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'streak-swarm-container';
+    container.id = 'streak-swarm-container';
+    document.body.appendChild(container);
+  }
+  const guessInput = document.getElementById('guess');
+  const rect = guessInput.getBoundingClientRect();
+  const baseX = rect.left + rect.width / 2 + window.scrollX;
+  const baseY = rect.top + rect.height / 2 + window.scrollY;
+  for (let i = 0; i < count; i++) {
+    const icon = document.createElement('div');
+    icon.className = 'streak-swarm-icon';
+    icon.innerHTML = '<img src="StreakIcon.svg" style="width: 2.2rem; height: 2.2rem; display: block;">';
+    const spreadX = (Math.random() - 0.5) * 480;
+    const spreadY = -270 - Math.random() * 330;
+    icon.style.left = `${baseX}px`;
+    icon.style.top = `${baseY}px`;
+    icon.style.setProperty('--swarm-transform', `translate(${spreadX}px, ${spreadY}px) scale(${0.7 + Math.random() * 0.6})`);
+    container.appendChild(icon);
+    icon.addEventListener('animationend', () => icon.remove());
+  }
+}
+
+function handleGuess(e) {
+    e.preventDefault();
+    const guessInput = document.getElementById('guess').value;
+    const guess = parseFloat(guessInput);
+    guesses++;
+    let feedback = '';
+    let result = '';
+    if (isNaN(guess)) {
+      feedback = 'Enter a valid price.';
+      document.getElementById('feedback').textContent = feedback;
+      return;
+    }
+
+    if (Math.abs(guess - current.price) <= 0.5) {
+        score++;
+        streak++;
+        localStorage.setItem('nofrills_score', score);
+        localStorage.setItem('nofrills_streak', streak);
+        document.getElementById('score').textContent = score;
+        feedback = `Correct! Actual price: $${current.price.toFixed(2)}`;
+        result = 'correct';
+        guessHistory.push({ value: guess.toFixed(2), result });
+        renderGuessBoxes();
+        updateStreakDisplay();
+        let playedSwarm = false;
+        if (streak > 0 && streak % 10 === 0) {
+          streakSwarm();
+          playedSwarm = true;
+        }
+        if (guess === current.price && !playedSwarm) {
+          streakSwarm();
+        }
+        setTimeout(() => { pickProduct(); renderGuessBoxes(); }, 2000);
+    } else if (guesses >= 5) {
+        feedback = `Out of guesses! Actual price: $${current.price.toFixed(2)}`;
+        result = 'wrong';
+        streak = 0;
+        localStorage.setItem('nofrills_streak', streak);
+        guessHistory.push({ value: guess.toFixed(2), result });
+        renderGuessBoxes();
+        updateStreakDisplay();
+        setTimeout(() => { pickProduct(); renderGuessBoxes(); }, 2000);
+    } else {
+        if (guess < current.price) {
+            feedback = `Higher! ${5 - guesses} guesses left.`;
+            result = 'higher';
+        } else {
+            feedback = `Lower! ${5 - guesses} guesses left.`;
+            result = 'lower';
+        }
+        guessHistory.push({ value: guess.toFixed(2), result });
+        renderGuessBoxes();
+        document.getElementById('guesses-left').textContent = 5 - guesses;
+    }
+    document.getElementById('feedback').textContent = feedback;
+    document.getElementById('guess').value = '';
+}
+
+function handleSkip() {
+    streak = 0;
+    localStorage.setItem('nofrills_streak', streak);
+    updateStreakDisplay();
+    pickProduct();
+    renderGuessBoxes();
+}
+
+document.getElementById('guess-form').addEventListener('submit', handleGuess);
+document.getElementById('skip-btn').addEventListener('click', handleSkip);
+
+window.onload = function() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('shown').textContent = shown;
+    updateStreakDisplay();
+    var instructionsModal = document.getElementById('instructions-modal');
+    if (instructionsModal) {
+        instructionsModal.style.display = 'flex';
+    }
+};
+
+(function() {
+  var instructionsModal = document.getElementById('instructions-modal');
+  if (instructionsModal) {
+    instructionsModal.addEventListener('click', function(e) {
+      if (e.target === instructionsModal) instructionsModal.style.display = 'none';
+    });
+  }
+})();
+
+(function() {
+  var instructionsBtn = document.getElementById('instructions-btn');
+  var instructionsModal = document.getElementById('instructions-modal');
+  var closeInstructions = document.getElementById('close-instructions');
+  if (instructionsBtn && instructionsModal) {
+    instructionsBtn.addEventListener('click', function() {
+      instructionsModal.style.display = 'flex';
+    });
+  }
+  if (closeInstructions && instructionsModal) {
+    closeInstructions.addEventListener('click', function(e) {
+      instructionsModal.style.display = 'none';
+      e.stopPropagation();
+    });
+  }
+})();
+
+function pickProduct() {
+    guesses = 0;
+    guessHistory = [];
+    shown++;
+    localStorage.setItem('nofrills_shown', shown);
+    document.getElementById('shown').textContent = shown;
+    document.getElementById('guesses-left').textContent = 5;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('guess').value = '';
+    document.getElementById('guess-boxes').innerHTML = '';
+    current = products[Math.floor(Math.random() * products.length)];
+    document.getElementById('product-name').textContent = current.name;
+    var img = document.getElementById('product-img');
+    img.src = current.image_url || current.image || '';
+    img.alt = current.name;
+}
+
+(function() {
+  var productImg = document.getElementById('product-img');
+  var imageModal = document.getElementById('image-modal');
+  var modalImg = document.getElementById('modal-img');
+  if (productImg && imageModal && modalImg) {
+    productImg.style.cursor = 'zoom-in';
+    productImg.addEventListener('click', function() {
+      modalImg.src = productImg.src;
+      imageModal.style.display = 'flex';
+    });
+    imageModal.addEventListener('click', function(e) {
+      if (e.target === imageModal) imageModal.style.display = 'none';
+    });
+  }
+})();
+
+loadCSV();
+</script>
+</body>
+</html>
