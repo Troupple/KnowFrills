@@ -844,7 +844,7 @@
     <div class="challenge-feedback" id="challenge-feedback"></div>
     
     <div class="challenge-input-row">
-      <input type="text" id="challenge-guess-input" class="challenge-guess-input" placeholder="Guess price" autocomplete="off" readonly>
+      <input type="text" id="challenge-guess-input" class="challenge-guess-input" placeholder="Guess price" autocomplete="off">
     </div>
     
     <div class="challenge-keypad" id="challenge-keypad">
@@ -1384,7 +1384,7 @@ function loadDailyState() {
       } else {
         dailyState = {
           lastPlayedDate: today,
-          spinsRemaining: (state.spinsRemaining || 0) + 1,
+          spinsRemaining: 1,
           currentChallenge: null,
           guesses: [],
           guessesLeft: 5,
@@ -1720,6 +1720,10 @@ function bindControls() {
         }
       } else {
         input.value += num;
+      }
+      
+      if (window.ontouchstart !== undefined) {
+        input.setAttribute('readonly', '');
       }
     });
   });
