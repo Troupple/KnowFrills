@@ -1759,6 +1759,14 @@ if (howToPlayBtn) {
       tutorialModal.classList.add('active');
     }
   });
+  
+  if (!localStorage.getItem('gacha_showed_tutorial')) {
+    const tutorialModal = document.getElementById('tutorial-modal');
+    if (tutorialModal) {
+      tutorialModal.classList.add('active');
+      localStorage.setItem('gacha_showed_tutorial', 'true');
+    }
+  }
 }
 </script>
 </body>

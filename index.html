@@ -619,10 +619,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var instructionsBtn = document.getElementById('instructions-btn');
   var instructionsModal = document.getElementById('instructions-modal');
   var closeInstructions = document.getElementById('close-instructions');
+  
   if (instructionsBtn && instructionsModal) {
     instructionsBtn.addEventListener('click', function() {
       instructionsModal.style.display = 'flex';
     });
+    
+    if (!localStorage.getItem('nofrills_showed_instructions')) {
+      instructionsModal.style.display = 'flex';
+      localStorage.setItem('nofrills_showed_instructions', 'true');
+    }
   }
   if (closeInstructions && instructionsModal) {
     closeInstructions.addEventListener('click', function(e) {
