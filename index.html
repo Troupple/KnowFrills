@@ -598,12 +598,15 @@ loadCSV().then(() => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    var instructionsModal = document.getElementById('instructions-modal');
-    if (instructionsModal) {
-      instructionsModal.style.display = 'flex';
-    }
-  }, 100);
+  if (!localStorage.getItem('nofrills_showed_instructions')) {
+    setTimeout(function() {
+      var instructionsModal = document.getElementById('instructions-modal');
+      if (instructionsModal) {
+        instructionsModal.style.display = 'flex';
+        localStorage.setItem('nofrills_showed_instructions', 'true');
+      }
+    }, 100);
+  }
 });
 
 (function() {
@@ -624,11 +627,6 @@ document.addEventListener('DOMContentLoaded', function() {
     instructionsBtn.addEventListener('click', function() {
       instructionsModal.style.display = 'flex';
     });
-    
-    if (!localStorage.getItem('nofrills_showed_instructions')) {
-      instructionsModal.style.display = 'flex';
-      localStorage.setItem('nofrills_showed_instructions', 'true');
-    }
   }
   if (closeInstructions && instructionsModal) {
     closeInstructions.addEventListener('click', function(e) {

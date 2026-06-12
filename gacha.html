@@ -1731,12 +1731,15 @@ loadCSV();
 loadFromCache();
 loadDailyState();
 
-setTimeout(() => {
-  const tutorialModal = document.getElementById('tutorial-modal');
-  if (tutorialModal) {
-    tutorialModal.classList.add('active');
-  }
-}, 300);
+if (!localStorage.getItem('gacha_showed_tutorial')) {
+  setTimeout(() => {
+    const tutorialModal = document.getElementById('tutorial-modal');
+    if (tutorialModal) {
+      tutorialModal.classList.add('active');
+      localStorage.setItem('gacha_showed_tutorial', 'true');
+    }
+  }, 300);
+}
 
 const closeTutorial = document.getElementById('close-tutorial');
 const tutorialModal = document.getElementById('tutorial-modal');
@@ -1759,15 +1762,24 @@ if (howToPlayBtn) {
       tutorialModal.classList.add('active');
     }
   });
-  
-  if (!localStorage.getItem('gacha_showed_tutorial')) {
-    const tutorialModal = document.getElementById('tutorial-modal');
-    if (tutorialModal) {
-      tutorialModal.classList.add('active');
-      localStorage.setItem('gacha_showed_tutorial', 'true');
-    }
-  }
 }
+
+let lastShakeTime = 0;
+window.addEventListener('devicemotion', (event) => {
+  const acceleration = event.accelerationIncludingGravity;
+  const x = acceleration.x || 0;
+  const y = acceleration.y || 0;
+  const z = acceleration.z || 0;
+  
+  const shakeThreshold = 25;
+  const shakeStrength = Math.sqrt(x * x + y * y + z * z);
+  
+  const now = Date.now();
+  if (shakeStrength > shakeThreshold && now - lastShakeTime > 500) {
+    lastShakeTime = now;
+    shake();
+  }
+}, false);
 </script>
 </body>
 </html>
