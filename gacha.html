@@ -1765,39 +1765,44 @@ if (howToPlayBtn) {
 }
 
 let lastShakeTime = 0;
+let shakeHistory = [];
 
 const setupShakeDetection = () => {
-  let lastX = 0, lastY = 0, lastZ = 0;
-  
   window.addEventListener('devicemotion', (event) => {
-    const acceleration = event.acceleration;
-    if (!acceleration) return;
-    
-    const x = acceleration.x || 0;
-    const y = acceleration.y || 0;
-    const z = acceleration.z || 0;
-    
-    const deltaX = Math.abs(x - lastX);
-    const deltaY = Math.abs(y - lastY);
-    const deltaZ = Math.abs(z - lastZ);
-    
-    lastX = x;
-    lastY = y;
-    lastZ = z;
-    
-    const shakeThreshold = 15;
-    const shakeStrength = deltaX + deltaY + deltaZ;
-    
-    const now = Date.now();
-    if (shakeStrength > shakeThreshold && now - lastShakeTime > 500) {
-      lastShakeTime = now;
-      shake();
+    try {
+      const accel = event.acceleration || event.accelerationIncludingGravity;
+      if (!accel) return;
+      
+      const x = accel.x || 0;
+      const y = accel.y || 0;
+      const z = accel.z || 0;
+      
+      const magnitude = Math.sqrt(x * x + y * y + z * z);
+      shakeHistory.push(magnitude);
+      
+      if (shakeHistory.length > 3) {
+        shakeHistory.shift();
+      }
+      
+      if (shakeHistory.length === 3) {
+        const avg = shakeHistory.reduce((a, b) => a + b) / 3;
+        const variance = shakeHistory.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / 3;
+        const stdDev = Math.sqrt(variance);
+        
+        const now = Date.now();
+        if (stdDev > 5 && now - lastShakeTime > 500) {
+          lastShakeTime = now;
+          shake();
+        }
+      }
+    } catch (e) {
+      console.error('shake detection error:', e);
     }
   }, false);
 };
 
 if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-  document.addEventListener('click', () => {
+  const requestMotionPermission = () => {
     DeviceMotionEvent.requestPermission()
       .then(permissionState => {
         if (permissionState === 'granted') {
@@ -1805,7 +1810,10 @@ if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.request
         }
       })
       .catch(console.error);
-  }, { once: true });
+  };
+  
+  document.addEventListener('click', requestMotionPermission, { once: true });
+  document.addEventListener('touchstart', requestMotionPermission, { once: true });
 } else {
   setupShakeDetection();
 }
