@@ -844,7 +844,7 @@
     <div class="challenge-feedback" id="challenge-feedback"></div>
     
     <div class="challenge-input-row">
-      <input type="text" id="challenge-guess-input" class="challenge-guess-input" placeholder="Guess price" autocomplete="off">
+      <input type="text" id="challenge-guess-input" class="challenge-guess-input" placeholder="Guess price" autocomplete="off" readonly>
     </div>
     
     <div class="challenge-keypad" id="challenge-keypad">
@@ -1721,7 +1721,6 @@ function bindControls() {
       } else {
         input.value += num;
       }
-      input.focus();
     });
   });
 
