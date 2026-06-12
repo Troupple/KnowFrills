@@ -1384,7 +1384,7 @@ function loadDailyState() {
       } else {
         dailyState = {
           lastPlayedDate: today,
-          spinsRemaining: 1,
+          spinsRemaining: (state.spinsRemaining || 0) + 1,
           currentChallenge: null,
           guesses: [],
           guessesLeft: 5,
