@@ -8,54 +8,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:title" content="Price Wordle | Nofrills Price Guessing Game">
     <meta property="og:description" content="Guess the price of Nofrills products in this fun web game. Inspired by Costcodle.">
-    <meta property="og:image" content="KnowFrills.svg">
+    <meta property="og:image" content="SVG/KnowFrills.svg">
     <meta property="og:type" content="website">
     <meta property="og:url" content="http://knowfrills.jambles.fun/">
-    <link rel="icon" type="image/svg+xml" href="no-frills-icon.svg">
+    <link rel="icon" type="image/svg+xml" href="SVG/no-frills-icon.svg">
+    <link rel="preload" as="image" type="image/svg+xml" href="SVG/up-arrow.svg">
+    <link rel="preload" as="image" type="image/svg+xml" href="SVG/down-arrow.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Akzidenz+Grotesk:wght@700&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fee600; margin: 0; }
-        .header { text-align: center; margin-top: 40px; margin-bottom: 20px; }
-        .game-card { max-width: 420px; margin: 0 auto; background: #fff; padding: 32px 24px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; }
-        .product-img { width: 220px; height: 220px; object-fit: contain; border-radius: 12px; margin-bottom: 18px; background: #f2f2f2; }
-        .product-name { font-size: 1.25em; font-weight: 600; margin-bottom: 12px; text-align: center; }
-        .score { font-size: 1.1em; margin-bottom: 8px; color: #0077cc; }
-        .guess-form { width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .guess-input { font-size: 1.1em; padding: 8px; width: 120px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #ccc; }
-        .guess-btn { background: #0077cc; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; margin-bottom: 8px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; background:#ffd700 100%; margin: 0; min-height: 100vh; padding: 8px; }
+        
+        .header { text-align: center; margin-bottom: 12px; padding: 18px 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .header img { height: 40px; }
+        @media (max-width: 480px) {
+            .header img { height: 32px; }
+            .header { padding-top: 20px; }
+        }
+        .header h1 { margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2.2em; color: #0077cc; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1; }
+        .header-bottom { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .button-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
+        .header button { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 900; background: #0077cc; color: #fff; border: none; border-radius: 6px; padding: 10px 16px; cursor: pointer; font-size: 1em; transition: background 0.2s; text-transform: uppercase; letter-spacing: 0.04em; }
+        .header button:hover { background: #005fa3; }
+        
+        .game-card { max-width: 340px; margin: 0 auto; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; }
+        
+        @media (max-width: 480px) {
+            body { padding: 6px; }
+            .game-card { max-width: 320px; padding: 8px; }
+            .header { margin-bottom: 6px; gap: 4px; padding: 12px 8px 6px; }
+            .header img { height: 32px; }
+            .header h1 { font-size: 1.5em; }
+            .header button { padding: 8px 12px; font-size: 0.85em; }
+            .stats-bar { font-size: 0.75em; margin-bottom: 6px; padding-bottom: 6px; gap: 3px; }
+            .stat-value { font-size: 1.1em; }
+            .stat-label { font-size: 0.8em; }
+            .product-img { width: 110px; height: 110px; margin: 2px 0; }
+            .product-name { font-size: 0.9em; max-width: 110px; margin: 2px 0; }
+            .guess-boxes { gap: 4px; margin: 6px 0; }
+            .guess-box { width: 40px; height: 40px; font-size: 0.9em; }
+            .guess-count { font-size: 0.75em; margin: 2px 0; }
+            .feedback { margin: 4px 0; font-size: 0.85em; }
+            .guess-input { font-size: 0.9em; padding: 5px 6px; }
+            .guess-form { gap: 4px; }
+            .input-row { gap: 4px; }
+            .btn-row { gap: 3px; margin-bottom: 4px; }
+            .guess-btn, .skip-btn { padding: 4px 5px; font-size: 0.8em; }
+            .number-pad { gap: 2px; margin: 4px 0; max-width: 100%; }
+            .number-btn { padding: 4px; font-size: 0.7em; border-radius: 4px; }
+            .action-row { gap: 4px; margin-top: 4px; }
+            .reset-score-btn { padding: 4px 6px; font-size: 0.75em; }
+            .buy-coffee-link { margin-top: 0; }
+            .buy-coffee-btn { font-size: 0.75em; padding: 4px 8px; }
+            .button-row { gap: 6px; }
+        }
+        
+        .stats-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; font-size: 0.95em; }
+        .stat { display: flex; align-items: center; gap: 4px; }
+        .stat-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: #0077cc; font-size: 1.5em; }
+        .stat-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: #666; font-size: 1em; }
+        
+        .product-img { width: 180px; height: 180px; flex-shrink: 0; object-fit: contain; border-radius: 12px; margin: 8px 0; background: #f8f8f8; cursor: move; transition: transform 0.2s; }
+        .product-img:hover { transform: scale(1.02); }
+        
+        .magnifier-container { display: inline-block; position: relative; }
+        .magnifier { display: none; position: fixed; overflow: hidden; height: 200px; width: 200px; border: 2px solid #0077cc; border-radius: 10px; background-color: white; z-index: 10000; }
+        .magnifier__img { width: 1000px; transform-origin: 100px 100px; }
+        
+        .product-name { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; font-size: 1.05em; margin: 6px 0; text-align: center; color: #333; line-height: 1.3; max-width: 180px; word-wrap: break-word; overflow-wrap: break-word; }
+        
+        .guess-boxes { display: flex; gap: 6px; margin: 10px 0; justify-content: center; flex-wrap: wrap; }
+        .guess-box { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; width: 50px; height: 50px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: clamp(0.65em, 4vw, 0.85em); color: #333; border: 2px solid #ddd; overflow: hidden; white-space: nowrap; }
+        .guess-box.correct { background: #90EE90; border-color: #228B22; color: #333; }
+        .guess-box.wrong { background: #FFB6C1; border-color: #DC143C; color: #8B0000; }
+        .guess-box.higher { background: #FFD100; border-color: #FF8C00; color: #333; }
+        .guess-box.lower { background: #87CEEB; border-color: #0077cc; color: #333; }
+        
+        .feedback { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; margin: 6px 0; font-size: 0.95em; color: #007700; min-height: 18px; text-align: center; }
+        .feedback.error { color: #bb2222; }
+        
+        .guess-count { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; font-size: 0.85em; color: #666; margin: 4px 0; }
+        
+        .guess-form { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .input-row { display: flex; gap: 6px; width: 100%; max-width: 200px; }
+        .guess-input { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; flex: 1; min-width: 0; font-size: 0.95em; padding: 8px 10px; border-radius: 6px; border: 2px solid #ddd; transition: border-color 0.2s; }
+        .guess-input:focus { outline: none; border-color: #0077cc; }
+        
+        .btn-row { display: flex; gap: 6px; width: 100%; }
+        .guess-btn { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; flex: 1; background: #0077cc; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 0.9em; transition: background 0.2s; }
         .guess-btn:hover { background: #005fa3; }
-        .skip-btn { background: #eee; color: #333; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 1em; }
-        .skip-btn:hover { background: #ccc; }
-        .feedback { margin: 14px 0; font-size: 1.1em; color: #007700; min-height: 24px; }
-        .error { color: #bb2222; }
-        .guess-count { margin-bottom: 8px; color: #555; }
-        .footer { text-align: center; margin-top: 40px; margin-bottom: 40px; color: #888; font-size: 0.95em; }
-        .guess-boxes { display: flex; gap: 8px; margin-bottom: 12px; }
-        .guess-box { width: 48px; height: 48px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-weight: bold; color: #333; border: 2px solid #ccc; }
-        .guess-box.correct { background: #aaffaa; border-color: #007700; }
-        .guess-box.wrong { background: #ffcccc; border-color: #bb2222; }
-        .guess-box.higher { background: #ffe066; border-color: #ffb700; }
-        .guess-box.lower { background: #66b3ff; border-color: #0077cc; }
-        .buy-coffee { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; margin-top: 40px; }
-        .buy-coffee-btn { background: #fff; color: #222; border: 2px solid #bfae82; border-radius: 8px; padding: 8px 18px; font-size: 1.1em; font-weight: 600; display: flex; align-items: center; cursor: pointer; transition: background 0.2s; margin-left: 8px; }
-        .buy-coffee-btn:hover { background: #ffe066; }
-        .buy-coffee svg { height: 28px; width: 28px; margin-right: 8px; }
-        .reset-score-btn {
-            background: #da291c;
-            color: #fff;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-bottom: 8px;
-            margin-top: 8px;
-            font-weight: bold;
-        }
-        .reset-score-btn:hover {
-            background: #b71c13;
-        }
-        .streak-count { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 6px 12px; font-size: 1.1em; z-index: 2; }
-        .streak-icon { margin-left: 8px; width: 24px; height: 24px; }
+        .skip-btn { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; flex: 1; background: #f0f0f0; color: #333; border: 2px solid #ddd; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 0.9em; transition: all 0.2s; }
+        .skip-btn:hover { background: #e8e8e8; border-color: #999; }
+        
+        .action-row { display: flex; gap: 6px; width: 100%; margin-top: 4px; }
+        .reset-score-btn { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; width: 100%; background: #da291c; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 0.9em; transition: background 0.2s; }
+        .reset-score-btn:hover { background: #b71c13; }
+        
+        .buy-coffee-link { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+        
+        .footer { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; text-align: center; margin-top: 12px; color: #666; font-size: 0.8em; }
+        .footer a { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; color: #0077cc; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        
+        .number-pad { display: none; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0; width: 100%; max-width: 200px; }
+        .number-pad.active { display: grid; }
+        .number-btn { background: #f0f0f0; border: 2px solid #ddd; border-radius: 8px; padding: 8px; font-size: 0.95em; font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .number-btn:active { background: #0077cc; color: white; transform: scale(0.95); }
+        .number-btn.delete { }
+        .buy-coffee-btn { font-family: 'Akzidenz Grotesk', sans-serif; font-weight: 700; background: #fff; color: #222; border: 2px solid #bfae82; border-radius: 8px; padding: 8px 10px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: background 0.2s; text-decoration: none; width: 100%; }
+        .buy-coffee-btn:hover { background: #FFD100; }
     </style>
 </head>
 <body>
@@ -89,70 +150,92 @@
   }
 </style>
 <div class="header">
-    <img src="KnowFrills.svg" alt="No Frills Logo" style="height:48px;">
-    <h1 style="margin:0; font-size:2em; color:#0077cc;">Price Wordle!</h1>
-    <button id="instructions-btn" style="margin-left:16px; background:#0077cc; color:#fff; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; font-size:1em;">How to Play</button>
-</div>
-<div class="game-card" style="position: relative;">
-    <div style="display: flex; align-items: center; margin-bottom: 8px;">
-        <span id="streak-count" style="font-size:1.1em; color:#d32f2f; font-weight:600;">Streak: 0</span>
-        <img src="StreakIcon.svg" alt="Streak Icon" class="streak-icon" style="margin-left:8px; width:24px; height:24px;">
+    <img src="SVG/KnowFrills.svg" alt="No Frills Logo">
+    <div class="header-bottom">
+        <h1>Price Wordle!</h1>
     </div>
-    <div class="score">Score: <span id="score">0</span>/<span id="shown">0</span></div>
-    <div class="guess-count">Guesses left: <span id="guesses-left">5</span></div>
+    <div class="button-row">
+        <button id="instructions-btn">How to Play</button>
+        <button id="gacha-btn" onclick="window.location.href='gacha.html'">The Daily Gacha</button>
+    </div>
+</div>
+
+<div class="game-card">
+    <div class="stats-bar">
+        <div class="stat">
+            <span class="stat-label">Score:</span>
+            <span class="stat-value"><span id="score">0</span>/<span id="shown">0</span></span>
+        </div>
+        <div class="stat">
+            <span class="stat-label">Streak:</span>
+            <span class="stat-value" id="streak-count">0</span>
+            <img src="SVG/StreakIcon.svg" alt="Streak" style="width: 18px; height: 18px;">
+        </div>
+    </div>
+    
     <div class="product-name" id="product-name">Loading...</div>
     <img class="product-img" id="product-img" src="" alt="Product image">
     <div class="guess-boxes" id="guess-boxes"></div>
+    
+    <div class="guess-count">Guesses left: <span id="guesses-left">5</span></div>
     <div class="feedback" id="feedback"></div>
+    
     <form class="guess-form" id="guess-form">
-        <input class="guess-input" type="number" step="0.01" min="0" id="guess" placeholder="Enter price" required>
-        <button class="guess-btn" type="submit">Submit Guess</button>
-        <button class="skip-btn" type="button" id="skip-btn">Skip</button>
-        <button class="reset-score-btn" id="reset-score-btn" style="margin-top:24px;">Reset Score</button>
+        <div class="input-row">
+            <input class="guess-input" type="text" id="guess" placeholder="Enter price" autocomplete="off" required>
+        </div>
+        <div class="number-pad" id="number-pad">
+            <button type="button" class="number-btn" data-num="1">1</button>
+            <button type="button" class="number-btn" data-num="2">2</button>
+            <button type="button" class="number-btn" data-num="3">3</button>
+            <button type="button" class="number-btn" data-num="4">4</button>
+            <button type="button" class="number-btn" data-num="5">5</button>
+            <button type="button" class="number-btn" data-num="6">6</button>
+            <button type="button" class="number-btn" data-num="7">7</button>
+            <button type="button" class="number-btn" data-num="8">8</button>
+            <button type="button" class="number-btn" data-num="9">9</button>
+            <button type="button" class="number-btn" data-num="0">0</button>
+            <button type="button" class="number-btn" data-num=".">.</button>
+            <button type="button" class="number-btn delete" data-num="delete">X</button>
+        </div>
+        <div class="btn-row">
+            <button class="guess-btn" type="submit">Submit</button>
+            <button class="skip-btn" type="button" id="skip-btn">Skip</button>
+        </div>
+        <div class="action-row">
+            <button class="reset-score-btn" id="reset-score-btn">Reset Score</button>
+        </div>
+        <div class="buy-coffee-link">
+            <a class="buy-coffee-btn" href="https://www.buymeacoffee.com/jambles" target="_blank">
+                <img src="SVG/coffee.svg" alt="Coffee" style="height: 16px; width: 16px;">
+                <span>Buy me a coffee!</span>
+            </a>
+        </div>
     </form>
+    </div>
+
+<div class="footer">
+    Inspired by <a href="https://costcodle.com/" target="_blank">Costcodle</a> | Data: <a href="https://www.nofrills.ca/" target="_blank">No Frills</a>
 </div>
-<!-- Modal for enlarged image -->
 <div id="image-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
   <img id="modal-img" src="" alt="Large product image" style="max-width:90vw; max-height:90vh; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.3);">
 </div>
-<!-- Modal for instructions -->
-<div id="instructions-modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:16px; max-width:420px; width:90vw; padding:32px 24px; box-shadow:0 4px 24px rgba(0,0,0,0.18); position:relative;">
-    <button id="close-instructions" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.5em; cursor:pointer;">&times;</button>
-    <h2 style="margin-top:0;">How to Play</h2>
-    <p>Guess the price of the No Frills product. You have 5 guesses. After each guess, you'll get feedback if the correct price is higher or lower. Try to get as many in a row as you can!</p>
-    <div class="examples">
-      <p><strong>Examples</strong></p>
-      <div class="example">
-        <div class="row">
-          <span class="guess-box correct">$2.99</span>
-        </div>
-        <p>Your guess is within $0.50 of the actual price. <strong>Correct!</strong></p>
-      </div>
-      <div class="example">
-        <div class="row">
-          <span class="guess-box higher">$1.99</span>
-        </div>
-        <p>The actual price is <strong>higher</strong> than your guess.</p>
-      </div>
-      <div class="example">
-        <div class="row">
-          <span class="guess-box lower">$4.99</span>
-        </div>
-        <p>The actual price is <strong>lower</strong> than your guess.</p>
+<div id="instructions-modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; max-width:400px; width:90vw; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.2); position:relative;">
+    <button id="close-instructions" style="position:absolute; top:12px; right:14px; background:none; border:none; font-size:1.4em; cursor:pointer; color:#666;">&times;</button>
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2em; color:#0077cc; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1;">How to Play</h2>
+    <p style="color:#333; line-height:1.6;">Guess the price of the No Frills product. You have 5 guesses. After each guess, you'll get feedback if the correct price is higher or lower. Try to get as many in a row as you can!</p>
+    <div style="margin-top: 16px;">
+      <p style="font-weight: 600; color:#333; margin-bottom: 8px;">Color Guide:</p>
+      <div style="display: flex; gap: 12px; flex-direction: column; font-size: 0.9em;">
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="guess-box correct" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$8.00</div><span style="color:#333;">Correct! Within $0.50</span></div>
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="guess-box higher" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$9.50</div><span style="color:#333;">Price is higher</span></div>
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="guess-box lower" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$6.00</div><span style="color:#333;">Price is lower</span></div>
       </div>
     </div>
   </div>
 </div>
-<div class="buy-coffee">
-    <button class="buy-coffee-btn" onclick="window.open('https://www.buymeacoffee.com/jambles', '_blank')">
-        <img src="coffee.svg" alt="Coffee" style="height:28px;width:28px;margin-right:8px;vertical-align:middle;">
-        Buy me a coffee!
-    </button>
-</div>
-<div class="footer">
-    Inspired by <a href="https://costcodle.com/" target="_blank">Costcodle</a> | Data: <a href="https://www.nofrills.ca/" target="_blank">No Frills</a>
-</div>
+
 <script>
 let products = [];
 let current = null;
@@ -161,6 +244,89 @@ let score = localStorage.getItem('nofrills_score') ? parseInt(localStorage.getIt
 let shown = localStorage.getItem('nofrills_shown') ? parseInt(localStorage.getItem('nofrills_shown')) : 0;
 let guessHistory = [];
 let streak = localStorage.getItem('nofrills_streak') ? parseInt(localStorage.getItem('nofrills_streak')) : 0;
+
+const parseHTML = htmlStr => {
+  const range = document.createRange()
+  range.selectNode(document.body)
+  return range.createContextualFragment(htmlStr)
+}
+
+const makeImgMagnifiable = img => {
+  const id = `_${crypto.randomUUID()}`
+  const magnifierFragment = parseHTML(`
+    <div id=${id} class="magnifier-container">
+      <div class="magnifier">
+        <img class="magnifier__img" src="${img.src}"/>
+      </div>
+    </div>
+  `)
+  
+  img.parentElement.insertBefore(magnifierFragment, img)
+  const magnifierContainerEl = document.querySelector(`#${id}`)
+  img.remove()
+  magnifierContainerEl.appendChild(img)
+  
+  const magnifierEl = magnifierContainerEl.querySelector('.magnifier')
+  const magnifierImg = magnifierEl.querySelector('.magnifier__img')
+  
+  const transform = { translate: [0, 0], scale: 1 }
+  
+  const setTransformStyle = (el, {translate, scale}) => {
+    const [xPercent, yRawPercent] = translate
+    const yPercent = yRawPercent < 0 ? 0 : yRawPercent
+    const [xOffset, yOffset] = [
+      `calc(-${xPercent}% + 100px)`,
+      `calc(-${yPercent}% + 100px)`,
+    ]
+    el.style = `transform: scale(${scale}) translate(${xOffset}, ${yOffset});`
+  }
+  
+  img.addEventListener('mousemove', event => {
+    const {top, left, bottom, right} = img.getBoundingClientRect()
+    transform.translate = [
+      ((event.clientX - left) / (right - left)) * 100,
+      ((event.clientY - top) / (bottom - top)) * 100,
+    ]
+    
+    let posX = event.clientX + 15
+    let posY = event.clientY - 100
+    
+    const magnifierWidth = 200
+    const magnifierHeight = 200
+    
+    if (posX + magnifierWidth > window.innerWidth) {
+      posX = event.clientX - magnifierWidth - 15
+    }
+    
+    if (posY < 10) {
+      posY = 10
+    }
+    
+    if (posY + magnifierHeight > window.innerHeight) {
+      posY = window.innerHeight - magnifierHeight - 10
+    }
+    
+    magnifierEl.style = `display: block; top: ${posY}px; left: ${posX}px;`
+    setTransformStyle(magnifierImg, transform)
+  })
+  
+  img.addEventListener('wheel', event => {
+    event.preventDefault()
+    const scrollingUp = event.deltaY < 0
+    const {scale} = transform
+    transform.scale = scrollingUp && scale < 1
+      ? scale + 0.1
+      : !scrollingUp && scale > 1
+      ? scale - 0.1
+      : scale
+    setTransformStyle(magnifierImg, transform)
+  })
+  
+  img.addEventListener('mouseleave', () => {
+    magnifierEl.style = ''
+    magnifierImg.style = ''
+  })
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const resetBtn = document.getElementById('reset-score-btn');
@@ -181,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Load CSV
 async function loadCSV() {
     try {
         const response = await fetch('nofrills_all_products.csv');
@@ -197,6 +362,7 @@ async function loadCSV() {
             return obj;
         });
         pickProduct();
+        renderGuessBoxes();
     } catch (e) {
         document.getElementById('feedback').textContent = 'Error loading products.';
     }
@@ -217,6 +383,7 @@ function pickProduct() {
     var img = document.getElementById('product-img');
     img.src = current.image_url || current.image || '';
     img.alt = current.name;
+    setTimeout(() => makeImgMagnifiable(img), 0);
 }
 
 function renderGuessBoxes() {
@@ -237,7 +404,7 @@ function renderGuessBoxes() {
 }
 
 function updateStreakDisplay() {
-    document.getElementById('streak-count').textContent = `Streak: ${streak}`;
+    document.getElementById('streak-count').textContent = streak;
 }
 
 function streakSwarm(count = 40) {
@@ -255,7 +422,7 @@ function streakSwarm(count = 40) {
   for (let i = 0; i < count; i++) {
     const icon = document.createElement('div');
     icon.className = 'streak-swarm-icon';
-    icon.innerHTML = '<img src="StreakIcon.svg" style="width: 2.2rem; height: 2.2rem; display: block;">';
+    icon.innerHTML = '<img src="SVG/StreakIcon.svg" style="width: 2.2rem; height: 2.2rem; display: block;">';
     const spreadX = (Math.random() - 0.5) * 480;
     const spreadY = -270 - Math.random() * 330;
     icon.style.left = `${baseX}px`;
@@ -273,19 +440,27 @@ function handleGuess(e) {
     guesses++;
     let feedback = '';
     let result = '';
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.classList.remove('error');
+    
     if (isNaN(guess)) {
       feedback = 'Enter a valid price.';
-      document.getElementById('feedback').textContent = feedback;
+      feedbackEl.textContent = feedback;
+      feedbackEl.classList.add('error');
       return;
     }
 
     if (Math.abs(guess - current.price) <= 0.5) {
+        const fireSound = new Audio('SFX/fire.mp3');
+        fireSound.volume = 0.6;
+        fireSound.play().catch(() => {});
+        
         score++;
         streak++;
         localStorage.setItem('nofrills_score', score);
         localStorage.setItem('nofrills_streak', streak);
         document.getElementById('score').textContent = score;
-        feedback = `Correct! Actual price: $${current.price.toFixed(2)}`;
+        feedback = `Correct! $${current.price.toFixed(2)}`;
         result = 'correct';
         guessHistory.push({ value: guess.toFixed(2), result });
         renderGuessBoxes();
@@ -300,31 +475,52 @@ function handleGuess(e) {
         }
         setTimeout(() => { pickProduct(); renderGuessBoxes(); }, 2000);
     } else if (guesses >= 5) {
-        feedback = `Out of guesses! Actual price: $${current.price.toFixed(2)}`;
+        const wrongSound = new Audio('SFX/wrong.mp3');
+        wrongSound.volume = 0.6;
+        wrongSound.play().catch(() => {});
+        
+        const sizzleSound = new Audio('SFX/sizzle.mp3');
+        sizzleSound.volume = 0.6;
+        sizzleSound.play().catch(() => {});
+        
+        feedback = `Out of guesses! Price: $${current.price.toFixed(2)}`;
         result = 'wrong';
         streak = 0;
         localStorage.setItem('nofrills_streak', streak);
         guessHistory.push({ value: guess.toFixed(2), result });
         renderGuessBoxes();
         updateStreakDisplay();
+        feedbackEl.classList.add('error');
         setTimeout(() => { pickProduct(); renderGuessBoxes(); }, 2000);
     } else {
         if (guess < current.price) {
-            feedback = `Higher! ${5 - guesses} guesses left.`;
+            const higherSound = new Audio('SFX/higher.mp3');
+            higherSound.volume = 0.6;
+            higherSound.play().catch(() => {});
+            
+            feedback = `<img src="SVG/up-arrow.svg" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"/> Higher! ${5 - guesses} guesses left.`;
             result = 'higher';
         } else {
-            feedback = `Lower! ${5 - guesses} guesses left.`;
+            const lowerSound = new Audio('SFX/lower.mp3');
+            lowerSound.volume = 0.6;
+            lowerSound.play().catch(() => {});
+            
+            feedback = `<img src="SVG/down-arrow.svg" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"/> Lower! ${5 - guesses} guesses left.`;
             result = 'lower';
         }
         guessHistory.push({ value: guess.toFixed(2), result });
         renderGuessBoxes();
         document.getElementById('guesses-left').textContent = 5 - guesses;
     }
-    document.getElementById('feedback').textContent = feedback;
+    feedbackEl.innerHTML = feedback;
     document.getElementById('guess').value = '';
 }
 
 function handleSkip() {
+    const sizzleSound = new Audio('sizzle.mp3');
+    sizzleSound.volume = 0.6;
+    sizzleSound.play().catch(() => {});
+    
     streak = 0;
     localStorage.setItem('nofrills_streak', streak);
     updateStreakDisplay();
@@ -335,15 +531,80 @@ function handleSkip() {
 document.getElementById('guess-form').addEventListener('submit', handleGuess);
 document.getElementById('skip-btn').addEventListener('click', handleSkip);
 
+const guessInput = document.getElementById('guess');
+const numberPad = document.getElementById('number-pad');
+
+function showNumberPad() {
+  if (window.innerWidth <= 480) {
+    numberPad.classList.add('active');
+  } else {
+    numberPad.classList.remove('active');
+  }
+}
+
+guessInput.addEventListener('focus', showNumberPad);
+
+guessInput.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const current = parseFloat(guessInput.value) || 0;
+    guessInput.value = (current + 0.5).toFixed(2);
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const current = parseFloat(guessInput.value) || 0;
+    if (current >= 0.5) {
+      guessInput.value = (current - 0.5).toFixed(2);
+    }
+  }
+});
+
+guessInput.addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+  const parts = e.target.value.split('.');
+  if (parts.length > 2) {
+    e.target.value = parts[0] + '.' + parts.slice(1).join('');
+  }
+});
+
+window.addEventListener('resize', showNumberPad);
+
+document.querySelectorAll('.number-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const num = btn.dataset.num;
+    
+    if (num === 'delete') {
+      guessInput.value = guessInput.value.slice(0, -1);
+    } else if (num === '.') {
+      if (!guessInput.value.includes('.')) {
+        guessInput.value += num;
+      }
+    } else {
+      guessInput.value += num;
+    }
+  });
+});
+
 window.onload = function() {
     document.getElementById('score').textContent = score;
     document.getElementById('shown').textContent = shown;
     updateStreakDisplay();
+};
+
+loadCSV().then(() => {
+    pickProduct();
+    renderGuessBoxes();
+    showNumberPad();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
     var instructionsModal = document.getElementById('instructions-modal');
     if (instructionsModal) {
-        instructionsModal.style.display = 'flex';
+      instructionsModal.style.display = 'flex';
     }
-};
+  }, 100);
+});
 
 (function() {
   var instructionsModal = document.getElementById('instructions-modal');
@@ -367,39 +628,6 @@ window.onload = function() {
     closeInstructions.addEventListener('click', function(e) {
       instructionsModal.style.display = 'none';
       e.stopPropagation();
-    });
-  }
-})();
-
-function pickProduct() {
-    guesses = 0;
-    guessHistory = [];
-    shown++;
-    localStorage.setItem('nofrills_shown', shown);
-    document.getElementById('shown').textContent = shown;
-    document.getElementById('guesses-left').textContent = 5;
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('guess').value = '';
-    document.getElementById('guess-boxes').innerHTML = '';
-    current = products[Math.floor(Math.random() * products.length)];
-    document.getElementById('product-name').textContent = current.name;
-    var img = document.getElementById('product-img');
-    img.src = current.image_url || current.image || '';
-    img.alt = current.name;
-}
-
-(function() {
-  var productImg = document.getElementById('product-img');
-  var imageModal = document.getElementById('image-modal');
-  var modalImg = document.getElementById('modal-img');
-  if (productImg && imageModal && modalImg) {
-    productImg.style.cursor = 'zoom-in';
-    productImg.addEventListener('click', function() {
-      modalImg.src = productImg.src;
-      imageModal.style.display = 'flex';
-    });
-    imageModal.addEventListener('click', function(e) {
-      if (e.target === imageModal) imageModal.style.display = 'none';
     });
   }
 })();

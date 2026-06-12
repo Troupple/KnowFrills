@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Daily Gacha | KnowFrills</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="SVG/no-frills-icon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; user-select: none; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      background:#ffd700 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+    }
+
+    .site-header {
+      text-align: center;
+      padding: 18px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 100;
+      pointer-events: auto;
+    }
+    .site-header img { height: 40px; }
+    .site-header h1 {
+      margin: 0;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.2em;
+      color: #0077cc;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .site-header p {
+      margin: 2px 0 0;
+      font-size: 0.95em;
+      color: #555;
+      font-weight: 700;
+    }
+    .site-header button {
+      margin-top: 6px;
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 900;
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .site-header button:hover {
+      background: #005fa3;
+    }
+    .site-header-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .back-link {
+      margin-top: 6px;
+      font-size: 0.85em;
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .machine-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 40px;
+    }
+
+    .hint {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 19px;
+      color: #0077cc;
+      text-align: center;
+      margin: -12px 0 4px;
+      line-height: 1;
+    }
+
+    .pix {
+      background-size: calc(var(--w) * var(--m)) calc(var(--h) * var(--m)) !important;
+      background-repeat: no-repeat !important;
+      image-rendering: pixelated;
+    }
+
+    .toy-box {
+      position: absolute;
+      top: -84px;
+      width: 320px;
+      height: 64px;
+    }
+
+    .capsule-machine {
+      position: relative;
+      width: 320px;
+      height: 500px;
+      --m: 4;
+      --w: 80px;
+      --h: 125px;
+      background-image: url(SVG/Back.svg);
+    }
+
+    .capsule-machine.shake { animation: forwards shake 0.5s; }
+    @keyframes shake {
+      0%, 40%, 80% { margin-left: 5px; }
+      20%, 60%, 100% { margin-left: -5px; }
+    }
+
+    .capsule-machine::after {
+      position: absolute;
+      content: '';
+      width: calc(var(--w) * var(--m));
+      height: calc(var(--h) * var(--m));
+      background-size: calc(var(--w) * var(--m)) calc(var(--h) * var(--m)) !important;
+      background-repeat: no-repeat !important;
+      image-rendering: pixelated;
+      background-image: url(SVG/Front.svg);
+      pointer-events: none;
+      z-index: 1;
+      transition: 0.5s;
+    }
+
+    .capsule-machine.see-through::after,
+    .capsule-machine.see-through .circle { opacity: 0.3; }
+
+    .wrapper-inner {
+      position: relative;
+      width: 320px;
+      height: 500px;
+    }
+
+    .lock-cover {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      transition: 1s;
+      background-color: transparent;
+      pointer-events: none;
+    }
+    .is-locked .lock-cover {
+      background-color: #fab2cc;
+      opacity: 0.8;
+      z-index: 10;
+    }
+
+    .capsule {
+      position: absolute;
+      left: calc((var(--w) * var(--m)) / var(--offset));
+      top: calc((var(--h) * var(--m)) / var(--offset));
+      width: calc(var(--w) * var(--m));
+      height: calc(var(--h) * var(--m));
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .lid, .base {
+      position: absolute;
+      --h-m: var(--m) / 2;
+      width: calc(var(--w) * var(--m));
+      height: calc(var(--h) * var(--h-m));
+      background-size: calc(var(--w) * var(--m)) calc(var(--h) * var(--h-m)) !important;
+      background-repeat: no-repeat !important;
+      image-rendering: pixelated;
+    }
+    .lid {
+      background-image: url(SVG/cap-top.svg);
+      top: 0; --start: 0; --end: -100px;
+    }
+    .base {
+      background-image: url(SVG/cap-btm.svg);
+      bottom: 0; --start: 0; --end: 100px;
+    }
+    .base.white { background-image: url(SVG/cap-btm.svg); }
+    .base.pink { background-image: url(SVG/cap-btm.svg); }
+    .base.red { background-image: url(SVG/cap-btm.svg); }
+    .base.blue { background-image: url(SVG/cap-btm.svg); }
+    
+    .capsule-wrapper.price-cheap .base {
+      background-image: url(SVG/cap-btm-cheap.svg);
+    }
+    .capsule-wrapper.price-medium .base {
+      background-image: url(SVG/cap-btm-medium.svg);
+    }
+    .capsule-wrapper.price-expensive .base {
+      background-image: url(SVG/cap-btm-expensive.svg);
+    }
+    .capsule-wrapper.price-super-expensive .base {
+      background-image: url(SVG/cap-btm-super-expensive.svg);
+    }
+
+    .capsule-wrapper.open .lid,
+    .capsule-wrapper.open .base { animation: open-capsule forwards 1s; }
+    @keyframes open-capsule {
+      0% { transform: translateY(var(--start)); opacity: 1; }
+      100% { transform: translateY(var(--end)); opacity: 0; }
+    }
+
+    .capsule-wrapper {
+      position: absolute;
+      --m: 4; --w: 16px; --h: 16px; --offset: -2;
+      width: 0; height: 0;
+      transition: 0.05s;
+      cursor: pointer;
+    }
+    .capsule-wrapper.enlarge {
+      --m: 8; z-index: 11; transition: 0.8s; pointer-events: none;
+    }
+    .capsule-wrapper.enlarge .toy { --m: 4; }
+    .capsule-wrapper.enlarge.open .toy { --m: 6; }
+    .capsule-wrapper.enlarge.open .toy.collected { --m: 2; }
+
+    .line-start, .line-end { position: absolute; height: 0; width: 0; }
+    .line { position: absolute; height: 1px; width: 0; border-top: solid #fee600 4px; }
+
+    .circle {
+      position: absolute;
+      bottom: 30px; left: 26px;
+      width: 160px; height: 160px;
+      display: flex; align-items: center;
+      z-index: 5;
+      background-image: url(SVG/circle.svg);
+      --w: 40px; --h: 40px; --m: 4;
+      transition: 0.5s;
+    }
+    .circle::after {
+      position: absolute; top: -10px; right: -22px; content: '';
+      --w: 15px; --h: 15px; --m: 4;
+      width: calc(var(--w) * var(--m)); height: calc(var(--h) * var(--m));
+      background-image: url(SVG/arrow.svg);
+      background-size: calc(var(--w) * var(--m)) calc(var(--h) * var(--m)) !important;
+      background-repeat: no-repeat !important;
+      image-rendering: pixelated;
+    }
+
+    .handle {
+      position: relative; width: 160px; height: 50px;
+      display: flex; justify-content: center; align-items: center; cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 7px;
+      color: #fff;
+      text-align: center;
+      line-height: 1.2;
+      z-index: 20;
+      background: transparent;
+      border-radius: 0;
+      text-shadow: none;
+      image-rendering: pixelated;
+    }
+    .handle::after {
+      position: absolute; top: -7px; content: '';
+      --w: 40px; --h: 16px; --m: 4;
+      width: calc(var(--w) * var(--m)); height: calc(var(--h) * var(--m));
+      background-image: url(SVG/spin.svg);
+      background-size: calc(var(--w) * var(--m)) calc(var(--h) * var(--m)) !important;
+      background-repeat: no-repeat !important;
+      image-rendering: pixelated;
+    }
+
+    .cover { position: absolute; z-index: 4; cursor: auto; }
+    .cover.a { top: 0; left: 0; width: 320px; height: 280px; }
+    .cover.b { top: 280px; left: 0; width: 212px; height: 220px; }
+    .cover.c { top: 280px; left: 212px; width: 108px; height: 108px; }
+    .cover.d { bottom: 0; left: 212px; width: 80px; height: 24px; }
+    .cover.e { bottom: 0; left: 292px; height: 112px; width: 28px; }
+
+    .toy {
+      position: absolute;
+      --w: 16px; --h: 16px; --m: 2;
+      width: calc(var(--w) * var(--m));
+      height: calc(var(--h) * var(--m));
+      z-index: -1;
+      transition: 0.5s;
+      background-size: contain !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      image-rendering: auto;
+    }
+    .capsule-wrapper.enlarge .toy {
+      --m: 4;
+      border-radius: 4px;
+    }
+    .capsule-wrapper.enlarge.open .toy { --m: 6; }
+
+    .btn-row {
+      display: flex; gap: 10px; margin-top: 10px; justify-content: center;
+    }
+    .gacha-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 9px;
+      border: 0;
+      background: #0077cc;
+      color: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .gacha-btn:hover { background: #005fa3; }
+    .gacha-btn.secondary {
+      background: #fff;
+      color: #0077cc;
+      border: 2px solid #0077cc;
+    }
+    .gacha-btn.secondary:hover { background: #e8f4ff; }
+
+    .reveal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .reveal-overlay.active { display: flex; }
+
+    #tutorial-modal {
+      display: none !important;
+      pointer-events: none !important;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+    #tutorial-modal.active {
+      display: flex !important;
+      pointer-events: auto !important;
+    }
+
+    .reveal-card {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 320px;
+      width: 88vw;
+      padding: 24px 20px 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      text-align: center;
+      position: relative;
+      animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .reveal-card .close-btn {
+      position: absolute; top: 10px; right: 14px;
+      background: none; border: none; font-size: 1.4em; cursor: pointer; color: #888;
+    }
+    .reveal-badge {
+      background: #fee600;
+      color: #0077cc;
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      padding: 2px 8px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .reveal-img {
+      width: 140px; height: 140px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #f8f8f8;
+      display: block;
+      margin: 0 auto 10px;
+    }
+    .reveal-name {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05em;
+      color: #222;
+      margin: 0 0 6px;
+      line-height: 1.3;
+    }
+    .reveal-price {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.8em;
+      color: #0077cc;
+    }
+    .reveal-guess-prompt {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .reveal-guess-prompt a {
+      color: #0077cc; font-weight: 900; text-decoration: none;
+    }
+    .reveal-guess-prompt a:hover { text-decoration: underline; }
+
+    .collection-section {
+      max-width: 400px;
+      margin: 0 auto 30px;
+      padding: 0 12px;
+    }
+    .collection-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.1em;
+      color: #0077cc;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+    .collection-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      min-height: 48px;
+    }
+    .collected-item {
+      background: #fff;
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 80px;
+      animation: popIn 0.3s ease forwards;
+    }
+    .collected-item img {
+      width: 52px; height: 52px; object-fit: contain;
+    }
+    .collected-item .c-price {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 0.85em;
+      color: #0077cc;
+    }
+    .collection-empty {
+      color: #999; font-size: 0.85em; text-align: center; width: 100%;
+    }
+
+    .collection-search {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+    }
+    .collection-search input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1em;
+      font-weight: 700;
+      border: 2px solid #0077cc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      color: #222;
+    }
+    .collection-search input::placeholder {
+      color: #999;
+    }
+    .collection-search input:focus {
+      outline: none;
+      background: #e8f4ff;
+    }
+
+    .challenge-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 250;
+      align-items: center;
+      justify-content: center;
+    }
+    .challenge-overlay.active { display: flex; }
+
+    .challenge-card {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 340px;
+      width: 88vw;
+      padding: 24px 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      text-align: center;
+      animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+
+    .challenge-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.5em;
+      color: #0077cc;
+      margin: 0 0 16px;
+      text-transform: uppercase;
+    }
+
+    .challenge-img {
+      width: 200px; height: 200px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+      background: #f8f8f8;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .challenge-product-name {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05em;
+      color: #333;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .guess-attempt {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.85em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .challenge-guess-boxes {
+      display: flex;
+      gap: 6px;
+      margin: 10px 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .challenge-guess-box {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      width: 50px; height: 50px;
+      border-radius: 8px;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.65em, 4vw, 0.85em);
+      color: #333;
+      border: 2px solid #ddd;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .challenge-guess-box.correct {
+      background: #90EE90;
+      border-color: #228B22;
+      color: #333;
+    }
+
+    .challenge-guess-box.higher {
+      background: #FFD629;
+      border-color: #FFA500;
+      color: #333;
+    }
+
+    .challenge-guess-box.lower {
+      background: #87CEEB;
+      border-color: #0077cc;
+      color: #333;
+    }
+
+    .challenge-feedback {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.95em;
+      color: #007700;
+      margin: 8px 0;
+      min-height: 20px;
+      text-align: center;
+    }
+
+    .challenge-feedback.error { color: #bb2222; }
+
+    .challenge-input-row {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0;
+      justify-content: center;
+    }
+
+    .challenge-guess-input {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      width: 140px;
+      padding: 8px 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95em;
+      transition: border-color 0.2s;
+    }
+
+    .challenge-guess-input:focus {
+      outline: none;
+      border-color: #0077cc;
+    }
+
+    .challenge-btn-row {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+      justify-content: center;
+    }
+
+    .challenge-btn {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s;
+    }
+
+    .challenge-submit-btn {
+      background: #0077cc;
+      color: #fff;
+      transition: background 0.2s;
+    }
+
+    .challenge-submit-btn:hover {
+      background: #005fa3;
+    }
+
+    .challenge-skip-btn {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .challenge-skip-btn:hover {
+      background: #e8e8e8;
+    }
+
+    .alert-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .alert-overlay.active { display: flex; }
+
+    .alert-modal {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 280px;
+      padding: 24px 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+      text-align: center;
+      animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+
+    .alert-text {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.95em;
+      color: #333;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .alert-btn {
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      padding: 8px 16px;
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    .alert-btn:hover {
+      background: #005fa3;
+    }
+
+    .challenge-keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0;
+      width: 100%;
+      max-width: 200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .challenge-keypad-btn {
+      background: #f0f0f0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.95em;
+      font-family: 'Akzidenz Grotesk', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .challenge-keypad-btn:active {
+      background: #0077cc;
+      color: white;
+      transform: scale(0.95);
+    }
+
+    .spins-counter {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.8rem;
+      color: #0077cc;
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .site-footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8em;
+      color: #666;
+    }
+    .site-footer a { color: #0077cc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .site-header img {
+        height: 34px;
+      }
+      .site-header button {
+        padding: 8px 12px;
+        font-size: 0.85em;
+      }
+      .challenge-img {
+        width: 160px; height: 160px;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .challenge-keypad {
+        display: none;
+      }
+    }
+
+    .magnifier-container { display: inline-block; position: relative; }
+    .magnifier { display: none; position: fixed; overflow: hidden; height: 200px; width: 200px; border: 2px solid #0077cc; border-radius: 10px; background-color: white; z-index: 10000; pointer-events: none; }
+    .magnifier__img { width: 1000px; transform-origin: 100px 100px; }
+  </style>
+</head>
+<body>
+
+<div class="site-header">
+  <img src="SVG/KnowFrills.svg" alt="No Frills Logo">
+  <h1>The Daily Gacha</h1>
+  <div class="site-header-buttons">
+    <button id="gacha-how-to-play">How to Play</button>
+    <button id="back-to-unlimited" onclick="window.location.href='index.html'">Back to Unlimited</button>
+  </div>
+</div>
+
+<div class="machine-area">
+  <div id="page-lock-target">
+    <div class="lock-cover" id="lock-cover"></div>
+    <div class="wrapper-inner">
+      <div class="capsule-machine pix" id="capsule-machine">
+        <div class="toy-box"></div>
+        <div class="cover a"></div>
+        <div class="cover b"></div>
+        <div class="cover c"></div>
+        <div class="cover d"></div>
+        <div class="cover e"></div>
+        <div class="circle pix">
+          <div class="handle" id="handle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spins-counter" id="spins-counter"></div>
+</div>
+
+<div class="collection-section">
+  <div class="collection-title">Your Collection (<span id="collected-count">0</span>)</div>
+  <div class="collection-search">
+    <input type="text" id="collection-search" placeholder="Search collection...">
+  </div>
+  <div class="collection-grid" id="collection-grid">
+    <span class="collection-empty">Turn the handle to collect products!</span>
+  </div>
+</div>
+
+<div class="alert-overlay" id="alert-overlay">
+  <div class="alert-modal">
+    <div class="alert-text" id="alert-text"></div>
+    <button class="alert-btn" id="alert-btn">OK</button>
+  </div>
+</div>
+
+<div class="challenge-overlay" id="challenge-overlay">
+  <div class="challenge-card" id="challenge-card">
+    <div class="challenge-title">Daily Challenge</div>
+    <img class="challenge-img" id="challenge-img" src="" alt="">
+    <div class="challenge-product-name" id="challenge-product-name"></div>
+    
+    <div class="guess-attempt">Guesses left: <span id="challenge-guesses-left">5</span>/5</div>
+    <div class="challenge-guess-boxes" id="challenge-guess-boxes"></div>
+    
+    <div class="challenge-feedback" id="challenge-feedback"></div>
+    
+    <div class="challenge-input-row">
+      <input type="text" id="challenge-guess-input" class="challenge-guess-input" placeholder="Guess price" autocomplete="off">
+    </div>
+    
+    <div class="challenge-keypad" id="challenge-keypad">
+      <button type="button" class="challenge-keypad-btn" data-num="1">1</button>
+      <button type="button" class="challenge-keypad-btn" data-num="2">2</button>
+      <button type="button" class="challenge-keypad-btn" data-num="3">3</button>
+      <button type="button" class="challenge-keypad-btn" data-num="4">4</button>
+      <button type="button" class="challenge-keypad-btn" data-num="5">5</button>
+      <button type="button" class="challenge-keypad-btn" data-num="6">6</button>
+      <button type="button" class="challenge-keypad-btn" data-num="7">7</button>
+      <button type="button" class="challenge-keypad-btn" data-num="8">8</button>
+      <button type="button" class="challenge-keypad-btn" data-num="9">9</button>
+      <button type="button" class="challenge-keypad-btn" data-num="0">0</button>
+      <button type="button" class="challenge-keypad-btn" data-num=".">.</button>
+      <button type="button" class="challenge-keypad-btn delete" data-num="delete">X</button>
+    </div>
+    
+    <div class="challenge-btn-row">
+      <button class="challenge-btn challenge-submit-btn" id="challenge-submit">Submit</button>
+    </div>
+  </div>
+</div>
+
+<div id="tutorial-modal">
+  <div style="background:#fff; border-radius:16px; max-width:400px; width:90vw; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.2); position:relative;">
+    <button id="close-tutorial" style="position:absolute; top:12px; right:14px; background:none; border:none; font-size:1.4em; cursor:pointer; color:#666;">&times;</button>
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2em; color:#0077cc; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1;">How to Play</h2>
+    <p style="color:#333; line-height:1.6;">Spin the gacha machine to get a capsule. Click it to reveal a product and guess the price. You have 5 guesses. Correct guesses earn you more spins!</p>
+    <div style="margin-top: 16px;">
+      <p style="font-weight: 600; color:#333; margin-bottom: 8px;">Color Guide:</p>
+      <div style="display: flex; gap: 12px; flex-direction: column; font-size: 0.9em;">
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="challenge-guess-box correct" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$8.00</div><span style="color:#333;">Correct! Within $0.50</span></div>
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="challenge-guess-box higher" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$9.50</div><span style="color:#333;">Price is higher</span></div>
+        <div style="display: flex; align-items: center; gap: 8px;"><div class="challenge-guess-box lower" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center;">$6.00</div><span style="color:#333;">Price is lower</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="reveal-overlay" id="reveal-overlay">
+  <div class="reveal-card" id="reveal-card">
+    <button class="close-btn" id="reveal-close">&times;</button>
+    <div class="reveal-badge">You got!</div>
+    <img class="reveal-img" id="reveal-img" src="" alt="">
+    <div class="reveal-name" id="reveal-name"></div>
+    <div class="reveal-price" id="reveal-price"></div>
+    <div class="reveal-guess-prompt">Think you know the price?<br><a href="index.html">Try the Price Wordle game!</a></div>
+  </div>
+</div>
+
+<div class="site-footer">
+  Inspired by <a href="https://costcodle.com/" target="_blank">Costcodle</a> &amp; <a href="https://codepen.io/Ma5a/pen/OJdWKYZ" target="_blank">Ma5a's capsule machine</a> | Data: <a href="https://www.nofrills.ca/" target="_blank">No Frills</a>
+</div>
+
+<script>
+let products = [];
+let collectedItems = [];
+
+function loadFromCache() {
+  const cached = localStorage.getItem('collectedItems');
+  if (cached) {
+    try {
+      collectedItems = JSON.parse(cached);
+      collectedItems.sort((a, b) => a.price - b.price);
+      const grid = document.getElementById('collection-grid');
+      grid.innerHTML = '';
+      collectedItems.forEach(item => {
+        const elem = document.createElement('div');
+        elem.className = 'collected-item';
+        elem.title = item.name;
+        elem.innerHTML = `
+          <img src="${item.imgSrc || ''}" alt="${item.name}" onerror="this.style.display='none'">
+          <span class="c-name" style="font-size: 0.7em; font-weight: 700; text-align: center; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${item.name}</span>
+          <span class="c-price">${isNaN(item.price)?'???':'$'+item.price.toFixed(2)}</span>
+        `;
+        grid.appendChild(elem);
+      });
+      document.getElementById('collected-count').textContent = collectedItems.length;
+    } catch(e) {
+      console.error('Failed to load cache', e);
+    }
+  }
+}
+
+async function loadCSV() {
+  try {
+    const resp = await fetch('nofrills_all_products.csv');
+    const text = await resp.text();
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',');
+    products = lines.slice(1).map(line => {
+      const values = line.match(/(?:"([^"]*)")|([^,]+)/g).map(v => v.replace(/^"|"$/g, ''));
+      let obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = values[i] ? values[i].trim() : '');
+      obj.price = parseFloat(obj.price);
+      obj.image_url = obj.image;
+      return obj;
+    }).filter(p => p.name && !isNaN(p.price));
+    initMachine();
+  } catch(e) {
+    console.error('CSV load failed', e);
+    initMachine();
+  }
+}
+
+function getRandomProduct() {
+  if (!products.length) return { name: 'Mystery Item', price: 0, image_url: '' };
+  return products[Math.floor(Math.random() * products.length)];
+}
+
+const CAPSULE_NO = 20;
+const settings = {
+  isTurningHandle: false,
+  isHandleLocked: false,
+  handlePrevDeg: 0,
+  handleDeg: 0,
+  handleRotate: 0,
+  flapRotate: 0,
+  collectedNo: 0,
+};
+
+const elements = {
+  capsuleMachine: document.getElementById('capsule-machine'),
+  shakeButton: document.getElementById('shake-btn'),
+  seeInsideButton: document.getElementById('see-inside-btn'),
+  circle: document.querySelector('.circle'),
+  handle: document.getElementById('handle'),
+  lockTarget: document.getElementById('page-lock-target'),
+  lockCover: document.getElementById('lock-cover'),
+};
+
+const vector = {
+  x: 0, y: 0,
+  create(x, y) { const o = Object.create(this); o.x = x; o.y = y; return o; },
+  setXy({ x, y }) { this.x = x; this.y = y; },
+  setAngle(angle) { const l = this.magnitude(); this.x = Math.cos(angle)*l; this.y = Math.sin(angle)*l; },
+  setLength(length) { const a = Math.atan2(this.y, this.x); this.x = Math.cos(a)*length; this.y = Math.sin(a)*length; },
+  magnitude() { return Math.sqrt(this.x*this.x + this.y*this.y); },
+  multiply(n) { return this.create(this.x*n, this.y*n); },
+  addTo(v2) { this.x += v2.x; this.y += v2.y; },
+  multiplyBy(n) { this.x *= n; this.y *= n; },
+};
+
+const rotatePoint = ({ angle, axis, point }) => {
+  const a = degToRad(angle);
+  const aX = point.x - axis.x, aY = point.y - axis.y;
+  return { x: (aX*Math.cos(a))-(aY*Math.sin(a))+axis.x, y: (aX*Math.sin(a))+(aY*Math.cos(a))+axis.y };
+};
+
+const px = n => `${n}px`;
+const randomN = max => Math.ceil(Math.random() * max);
+const degToRad = deg => deg / (180 / Math.PI);
+const radToDeg = rad => Math.round(rad * (180 / Math.PI));
+const angleTo = ({ a, b }) => Math.atan2(b.y-a.y, b.x-a.x);
+const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2)));
+const getPage = (e, type) => e.type[0]==='m' ? e[`page${type}`] : e.touches[0][`page${type}`];
+const nearest360 = n => n===0 ? 0 : (n-1)+Math.abs(((n-1)%360)-360);
+
+const setStyles = ({ el, x, y, w, deg }) => {
+  if (w) el.style.width = w;
+  el.style.transform = `translate(${x?px(x):0}, ${y?px(y):0}) rotate(${deg||0}deg)`;
+};
+
+const lineData = [
+  { start:{x:0,y:280},   end:{x:160,y:360}, point:'end',   axis:'start', id:'flap_1' },
+  { start:{x:160,y:360}, end:{x:320,y:280}, point:'start', axis:'end',   id:'flap_2' },
+  { start:{x:70,y:340},  end:{x:230,y:490}, point:'start', axis:'end',   id:'ramp'   },
+];
+
+let capsuleData = [];
+let lineStarts, lines, lineEnds, toys;
+let capsuleMachineWidth, capsuleMachineHeight;
+
+function initMachine() {
+  for (let i = 0; i < CAPSULE_NO; i++) {
+    const product = getRandomProduct();
+    const colors = ['red','pink','white','blue'];
+    const color = colors[randomN(4)-1];
+
+    const capsule = document.createElement('div');
+    capsule.className = 'capsule-wrapper pix';
+    
+    let priceClass = 'price-cheap';
+    if (product.price >= 41) {
+      priceClass = 'price-super-expensive';
+    } else if (product.price >= 20) {
+      priceClass = 'price-expensive';
+    } else if (product.price >= 10) {
+      priceClass = 'price-medium';
+    }
+    capsule.classList.add(priceClass);
+    
+    capsule.innerHTML = `<div class="capsule">
+      <div class="lid"></div>
+      <div class="toy pix" style="background-image:url('${product.image_url || ''}'); background-size:contain; background-repeat:no-repeat; background-position:center; image-rendering:auto;"></div>
+      <div class="base ${color}"></div>
+    </div>`;
+    capsule.dataset.productName = product.name;
+    capsule.dataset.productPrice = product.price;
+    capsule.dataset.productImg = product.image_url || '';
+    elements.capsuleMachine.appendChild(capsule);
+  }
+
+  lineData.forEach(() => {
+    const ls = Object.assign(document.createElement('div'), { className:'line-start', innerHTML:'<div class="line"></div>' });
+    const le = Object.assign(document.createElement('div'), { className:'line-end' });
+    elements.capsuleMachine.appendChild(ls);
+    elements.capsuleMachine.appendChild(le);
+  });
+
+  lineStarts = document.querySelectorAll('.line-start');
+  lines      = document.querySelectorAll('.line');
+  lineEnds   = document.querySelectorAll('.line-end');
+  toys       = document.querySelectorAll('.toy');
+
+  const rect = elements.capsuleMachine.getBoundingClientRect();
+  capsuleMachineWidth  = rect.width;
+  capsuleMachineHeight = rect.height;
+
+  capsuleData = Array.from(document.querySelectorAll('.capsule-wrapper')).map((c, i) => {
+    const data = {
+      ...vector,
+      el: c, id: i, deg: 0,
+      radius: 36,
+      bounce: -0.3,
+      friction: 0.99,
+      toy: toys[i],
+    };
+    data.velocity = data.create(0, 1);
+    data.velocity.setLength(10);
+    data.velocity.setAngle(degToRad(90));
+    data.setXy({ x: randomN(capsuleMachineWidth-32), y: randomN(capsuleMachineHeight-250) });
+    data.acceleration = data.create(0, 4);
+    data.accelerate = function(acc) { this.velocity.addTo(acc); };
+    return data;
+  });
+
+  capsuleData.forEach(c => {
+    c.el.addEventListener('click', () => onCapsuleClick(c));
+    setStyles(c);
+  });
+
+  updateLines();
+  setInterval(animateCapsules, 30);
+  bindControls();
+}
+
+function onCapsuleClick(c) {
+  if (c.selected) return;
+  const bodyRect = document.body.getBoundingClientRect();
+  const machineRect = elements.capsuleMachine.getBoundingClientRect();
+  const toyBoxRect  = document.querySelector('.toy-box').getBoundingClientRect();
+
+  elements.lockCover.style.backgroundColor = '#fab2cc';
+  elements.lockCover.style.opacity = '0.8';
+  elements.lockCover.style.zIndex  = '10';
+  elements.lockCover.style.pointerEvents = 'none';
+
+  c.el.classList.add('enlarge');
+  c.selected = true;
+
+  const centerX = window.innerWidth / 2 - machineRect.left;
+  const centerY = window.innerHeight / 2 - machineRect.top;
+  setStyles({ el: c.el, x: centerX, y: centerY, deg: nearest360(c.deg) });
+  setStyles({ el: c.toy, deg: 0 });
+
+  setTimeout(() => {
+    c.el.classList.add('open');
+    setTimeout(() => {
+      const popSound = new Audio('SFX/pop.mp3');
+      popSound.volume = 0.6;
+      popSound.play().catch(() => {});
+    }, 200);
+  }, 700);
+
+  setTimeout(() => {
+    elements.lockCover.style.backgroundColor = 'transparent';
+    elements.lockCover.style.opacity = '0';
+    elements.lockCover.style.zIndex  = '-1';
+
+    c.toy.classList.add('collected');
+    const collectedX = (settings.collectedNo % 10) * 32;
+    const collectedY = Math.floor(settings.collectedNo / 10) * 32;
+    setStyles({
+      el: c.el,
+      x: toyBoxRect.left - machineRect.left + 16 + collectedX,
+      y: toyBoxRect.top  - machineRect.top  + 16 + collectedY,
+    });
+    settings.collectedNo++;
+
+    const name  = c.el.dataset.productName;
+    const price = parseFloat(c.el.dataset.productPrice);
+    const img   = c.el.dataset.productImg;
+
+    dailyState.currentChallenge = { name, price, image_url: img };
+    dailyState.guesses = [];
+    dailyState.guessesLeft = 5;
+    document.getElementById('challenge-guess-boxes').innerHTML = '';
+
+    if (dailyState.guessesLeft === 0) {
+      showReveal(name, price, img);
+      addToCollection(name, price, img);
+    } else {
+      showChallenge();
+    }
+    
+    setTimeout(() => {
+      c.el.style.display = 'none';
+    }, 500);
+  }, 1800);
+}
+
+function showReveal(name, price, imgSrc) {
+  document.getElementById('reveal-name').textContent  = name || 'Mystery Item';
+  document.getElementById('reveal-price').textContent = isNaN(price) ? '???' : `$${price.toFixed(2)}`;
+  document.getElementById('reveal-img').src = imgSrc || '';
+  document.getElementById('reveal-img').alt = name || '';
+  document.getElementById('reveal-overlay').classList.add('active');
+}
+
+document.getElementById('reveal-close').addEventListener('click', () => {
+  document.getElementById('reveal-overlay').classList.remove('active');
+});
+document.getElementById('reveal-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('reveal-overlay'))
+    document.getElementById('reveal-overlay').classList.remove('active');
+});
+
+function addToCollection(name, price, imgSrc) {
+  collectedItems.push({ name, price, imgSrc });
+  collectedItems.sort((a, b) => a.price - b.price);
+  localStorage.setItem('collectedItems', JSON.stringify(collectedItems));
+  
+  const grid = document.getElementById('collection-grid');
+  const empty = grid.querySelector('.collection-empty');
+  if (empty) empty.remove();
+
+  grid.innerHTML = '';
+  collectedItems.forEach(item => {
+    const itemElem = document.createElement('div');
+    itemElem.className = 'collected-item';
+    itemElem.title = item.name;
+    itemElem.innerHTML = `
+      <img src="${item.imgSrc || ''}" alt="${item.name}" onerror="this.style.display='none'">
+      <span class="c-name" style="font-size: 0.7em; font-weight: 700; text-align: center; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${item.name}</span>
+      <span class="c-price">${isNaN(item.price)?'???':'$'+item.price.toFixed(2)}</span>
+    `;
+    grid.appendChild(itemElem);
+  });
+  document.getElementById('collected-count').textContent = collectedItems.length;
+}
+
+const handleAxisFn = () => {
+  const { left: hX, top: hY } = elements.circle.getBoundingClientRect();
+  const { top, left } = elements.capsuleMachine.getBoundingClientRect();
+  return { x: hX - left + 80, y: hY - top + 80 };
+};
+
+const updateLines = () => {
+  lineData.forEach((l, i) => {
+    l.length = distanceBetween(l.start, l.end);
+    setStyles({ el: lineStarts[i], x: l.start.x, y: l.start.y, deg: radToDeg(angleTo({ a: l.start, b: l.end })) });
+    setStyles({ el: lines[i], w: px(l.length) });
+    setStyles({ el: lineEnds[i], x: l.end.x, y: l.end.y });
+  });
+};
+
+const rotateLines = angles => {
+  angles.forEach((angle, i) => {
+    const { axis, point } = lineData[i];
+    lineData[i][point] = rotatePoint({ angle, axis: lineData[i][axis], point: lineData[i][point] });
+  });
+};
+
+const openFlap = () => {
+  if (settings.flapRotate > -20) {
+    settings.flapRotate -= 2;
+    rotateLines([2, -2, -4]);
+    updateLines();
+    setTimeout(openFlap, 30);
+  } else { setTimeout(closeFlap, 800); }
+};
+
+const closeFlap = () => {
+  if (settings.flapRotate < 0) {
+    settings.flapRotate += 1;
+    if (settings.flapRotate === 0) {
+      [{ x:160,y:360 },{ x:160,y:360 },{ x:70,y:340 }].forEach((item, i) => {
+        lineData[i][lineData[i].point].x = item.x;
+        lineData[i][lineData[i].point].y = item.y;
+      });
+      settings.isHandleLocked = false;
+    } else { rotateLines([-1, 1, 2]); }
+    updateLines();
+    setTimeout(closeFlap, 30);
+  }
+};
+
+const release = () => {
+  settings.flapRotate = 0;
+  settings.isHandleLocked = true;
+  setTimeout(openFlap, 30);
+};
+
+const shake = () => {
+  const shakeSound = new Audio('SFX/shake.mp3');
+  shakeSound.volume = 0.6;
+  shakeSound.play().catch(() => {});
+  
+  capsuleData.forEach(c => {
+    if (c.selected) return;
+    c.velocity.setAngle(degToRad(randomN(270)));
+    c.velocity.setXy({ x: 10, y: 10 });
+    c.accelerate(c.acceleration);
+  });
+  elements.capsuleMachine.classList.add('shake');
+  setTimeout(() => elements.capsuleMachine.classList.remove('shake'), 1500);
+};
+
+const spaceOutCapsules = c => {
+  capsuleData.forEach(c2 => {
+    if (c.id === c2.id || c2.selected) return;
+    const d = distanceBetween(c, c2);
+    if (d < c.radius * 2) {
+      c.velocity.multiplyBy(-0.6);
+      const overlap = d - c.radius * 2;
+      c.setXy(getNewPosByTarget({ start: c, target: c2, distance: overlap/2, fullDistance: d }));
+    }
+  });
+};
+
+const getNewPosByTarget = ({ start, target, distance: d, fullDistance }) => {
+  const r = fullDistance - d;
+  return {
+    x: Math.round(((r*start.x)+(d*target.x))/fullDistance),
+    y: Math.round(((r*start.y)+(d*target.y))/fullDistance),
+  };
+};
+
+const hitCheckLines = c => {
+  lineData.forEach(l => {
+    const d1 = distanceBetween(c, l.start), d2 = distanceBetween(c, l.end);
+    if (d1+d2 >= l.length-c.radius && d1+d2 <= l.length+c.radius) {
+      const dot = (((c.x-l.start.x)*(l.end.x-l.start.x))+((c.y-l.start.y)*(l.end.y-l.start.y))) / Math.pow(l.length,2);
+      const closest = { x: l.start.x+(dot*(l.end.x-l.start.x)), y: l.start.y+(dot*(l.end.y-l.start.y)) };
+      const fd = distanceBetween(c, closest);
+      if (fd < c.radius) {
+        c.velocity.multiplyBy(-0.6);
+        const ov = fd - c.radius;
+        c.setXy(getNewPosByTarget({ start:c, target:closest, distance:ov/2, fullDistance:fd }));
+      }
+    }
+  });
+};
+
+const hitCheckWalls = c => {
+  const buf = 5;
+  if (c.x+c.radius+buf > capsuleMachineWidth)  { 
+    c.x = capsuleMachineWidth-(c.radius+buf); 
+    c.velocity.x = -Math.abs(c.velocity.x) * 0.8;
+  }
+  if (c.x-(c.radius+buf) < 0)                  { 
+    c.x = c.radius+buf; 
+    c.velocity.x = Math.abs(c.velocity.x) * 0.8;
+  }
+  if (c.y+c.radius+buf > capsuleMachineHeight)  { 
+    c.y = capsuleMachineHeight-c.radius-buf; 
+    c.velocity.y = -Math.abs(c.velocity.y) * 0.8;
+  }
+  if (c.y-c.radius < 0)                         { 
+    c.y = c.radius; 
+    c.velocity.y = Math.abs(c.velocity.y) * 0.8;
+  }
+};
+
+const animateCapsules = () => {
+  for (let i = capsuleData.length - 1; i >= 0; i--) {
+    const c = capsuleData[i];
+    if (c.selected) continue;
+    
+    if (c.x > capsuleMachineWidth + 20 || 
+        c.x < -20 || 
+        c.y > capsuleMachineHeight + 20 || 
+        c.y < -20) {
+      c.el.remove();
+      capsuleData.splice(i, 1);
+      continue;
+    }
+    
+    c.prevX = c.x; c.prevY = c.y;
+    c.accelerate(c.acceleration);
+    c.velocity.multiplyBy(c.friction);
+    c.addTo(c.velocity);
+    spaceOutCapsules(c);
+    hitCheckLines(c);
+    hitCheckWalls(c);
+    if (Math.abs(c.prevX-c.x) < 2 && Math.abs(c.prevY-c.y) < 2) {
+      c.velocity.setXy({ x:0, y:0 });
+      c.setXy({ x:c.prevX, y:c.prevY });
+    } else if (Math.abs(c.prevX-c.x)) {
+      setStyles({ el: c.toy, deg: c.deg+(c.x-c.prevX)*2 });
+      c.deg += (c.x-c.prevX)*2;
+    }
+    setStyles(c);
+  }
+};
+
+function showAlert(message) {
+  document.getElementById('alert-text').textContent = message;
+  document.getElementById('alert-overlay').classList.add('active');
+}
+
+function closeAlert() {
+  document.getElementById('alert-overlay').classList.remove('active');
+}
+
+let dailyState = {
+  lastPlayedDate: null,
+  spinsRemaining: 1,
+  currentChallenge: null,
+  guesses: [],
+  guessesLeft: 5,
+};
+
+function getTodayDate() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function loadDailyState() {
+  const cached = localStorage.getItem('dailyGachaState');
+  if (cached) {
+    try {
+      const state = JSON.parse(cached);
+      const today = getTodayDate();
+      if (state.lastPlayedDate === today) {
+        dailyState = state;
+      } else {
+        dailyState = {
+          lastPlayedDate: today,
+          spinsRemaining: (state.spinsRemaining || 0) + 1,
+          currentChallenge: null,
+          guesses: [],
+          guessesLeft: 5,
+        };
+        saveDailyState();
+      }
+    } catch(e) {
+      console.error('Failed to load daily state', e);
+    }
+  } else {
+    dailyState.lastPlayedDate = getTodayDate();
+    saveDailyState();
+  }
+  updateSpinsDisplay();
+}
+
+function saveDailyState() {
+  localStorage.setItem('dailyGachaState', JSON.stringify(dailyState));
+  updateSpinsDisplay();
+}
+
+function updateSpinsDisplay() {
+  const counter = document.getElementById('spins-counter');
+  if (counter) {
+    if (dailyState.spinsRemaining === 0) {
+      counter.textContent = 'Check in tomorrow for more spins';
+      counter.style.color = '#FF8C00';
+    } else if (dailyState.guessesLeft === 0) {
+      counter.textContent = 'Come back tomorrow!';
+      counter.style.color = '#bb2222';
+    } else if (dailyState.spinsRemaining > 0) {
+      counter.textContent = `Spins available: ${dailyState.spinsRemaining}`;
+      counter.style.color = '#0077cc';
+    } else {
+      counter.textContent = 'Open your capsule and guess the price!';
+      counter.style.color = '#FF8C00';
+    }
+  }
+}
+
+function startDailyChallenge() {
+  if (dailyState.spinsRemaining <= 0 && dailyState.guessesLeft > 0) {
+    const product = getRandomProduct();
+    dailyState.currentChallenge = product;
+    dailyState.guesses = [];
+    showChallenge();
+  }
+}
+
+function showChallenge() {
+  const product = dailyState.currentChallenge;
+  if (!product) return;
+
+  dailyState.guesses = [];
+
+  document.getElementById('challenge-img').src = product.image_url || '';
+  document.getElementById('challenge-product-name').textContent = product.name || 'Mystery Item';
+  document.getElementById('challenge-guesses-left').textContent = dailyState.guessesLeft;
+  document.getElementById('challenge-feedback').textContent = '';
+  document.getElementById('challenge-guess-input').value = '';
+  updateChallengeDisplay();
+
+  setTimeout(() => {
+    const img = document.getElementById('challenge-img');
+    if (img && img.src) {
+      makeImgMagnifiable(img);
+    }
+  }, 100);
+
+  document.getElementById('challenge-overlay').classList.add('active');
+}
+
+function updateChallengeDisplay() {
+  const container = document.getElementById('challenge-guess-boxes');
+  container.innerHTML = '';
+  
+  dailyState.guesses.forEach(guess => {
+    const box = document.createElement('div');
+    box.className = 'challenge-guess-box';
+    
+    const diff = Math.abs(guess.price - dailyState.currentChallenge.price);
+    if (diff <= 0.50) {
+      box.classList.add('correct');
+      box.textContent = `$${guess.price.toFixed(2)}`;
+    } else if (guess.price > dailyState.currentChallenge.price) {
+      box.classList.add('higher');
+      box.textContent = `$${guess.price.toFixed(2)}`;
+    } else {
+      box.classList.add('lower');
+      box.textContent = `$${guess.price.toFixed(2)}`;
+    }
+    container.appendChild(box);
+  });
+}
+
+function checkGuess(guessedPrice) {
+  const product = dailyState.currentChallenge;
+  const diff = Math.abs(guessedPrice - product.price);
+  const feedback = document.getElementById('challenge-feedback');
+
+  if (dailyState.guessesLeft <= 0) {
+    feedback.innerHTML = `<strong>Out of guesses! Price was $${product.price.toFixed(2)}</strong>`;
+    feedback.classList.add('error');
+    return;
+  }
+
+  dailyState.guesses.push({ price: guessedPrice, diff });
+  dailyState.guessesLeft--;
+  updateChallengeDisplay();
+
+  if (diff <= 0.50) {
+    const fireSound = new Audio('SFX/fire.mp3');
+    fireSound.volume = 0.6;
+    fireSound.play().catch(() => {});
+    
+    feedback.innerHTML = '<strong>Correct! You earned a spin!</strong>';
+    feedback.classList.remove('error');
+    dailyState.spinsRemaining++;
+    document.getElementById('challenge-guess-input').disabled = true;
+    document.getElementById('challenge-submit').disabled = true;
+    addToCollection(product.name, product.price, product.image_url);
+    setTimeout(() => {
+      closeChallenge();
+      saveDailyState();
+    }, 1500);
+    return;
+  }
+
+  if (dailyState.guessesLeft <= 0) {
+    const wrongSound = new Audio('SFX/wrong.mp3');
+    wrongSound.volume = 0.6;
+    wrongSound.play().catch(() => {});
+    
+    document.getElementById('challenge-guess-input').disabled = true;
+    document.getElementById('challenge-submit').disabled = true;
+    feedback.innerHTML = `<strong>Out of guesses! Price was $${product.price.toFixed(2)}</strong>`;
+    feedback.classList.add('error');
+    setTimeout(() => {
+      closeChallenge();
+      saveDailyState();
+    }, 2000);
+    return;
+  }
+
+  if (guessedPrice > product.price) {
+    const lowerSound = new Audio('SFX/lower.mp3');
+    lowerSound.volume = 0.6;
+    lowerSound.play().catch(() => {});
+    
+    feedback.innerHTML = '<img src="SVG/down-arrow.svg" style="height:16px; width:16px; display:inline; margin-right:6px;" alt="down"> <strong style="color: #228B22;">Price is lower</strong>';
+  } else {
+    const higherSound = new Audio('SFX/higher.mp3');
+    higherSound.volume = 0.6;
+    higherSound.play().catch(() => {});
+    
+    feedback.innerHTML = '<img src="SVG/up-arrow.svg" style="height:16px; width:16px; display:inline; margin-right:6px;" alt="up"> <strong style="color: #228B22;">Price is higher</strong>';
+  }
+  saveDailyState();
+}
+
+function closeChallenge() {
+  document.getElementById('challenge-overlay').classList.remove('active');
+  dailyState.currentChallenge = null;
+  dailyState.guesses = [];
+  dailyState.guessesLeft = 5;
+  document.getElementById('challenge-guess-input').disabled = false;
+  document.getElementById('challenge-submit').disabled = false;
+  updateSpinsDisplay();
+}
+
+const parseHTML = htmlStr => {
+  const range = document.createRange()
+  range.selectNode(document.body)
+  return range.createContextualFragment(htmlStr)
+}
+
+const makeImgMagnifiable = img => {
+  const id = `_${crypto.randomUUID()}`
+  const magnifierFragment = parseHTML(`
+    <div id=${id} class="magnifier-container">
+      <div class="magnifier">
+        <img class="magnifier__img" src="${img.src}"/>
+      </div>
+    </div>
+  `)
+  
+  img.parentElement.insertBefore(magnifierFragment, img)
+  const magnifierContainerEl = document.querySelector(`#${id}`)
+  img.remove()
+  magnifierContainerEl.appendChild(img)
+  
+  const magnifierEl = magnifierContainerEl.querySelector('.magnifier')
+  const magnifierImg = magnifierEl.querySelector('.magnifier__img')
+  
+  const transform = { translate: [0, 0], scale: 1 }
+  
+  const setTransformStyle = (el, {translate, scale}) => {
+    const [xPercent, yRawPercent] = translate
+    const yPercent = yRawPercent < 0 ? 0 : yRawPercent
+    const [xOffset, yOffset] = [
+      `calc(-${xPercent}% + 100px)`,
+      `calc(-${yPercent}% + 100px)`,
+    ]
+    el.style = `transform: scale(${scale}) translate(${xOffset}, ${yOffset});`
+  }
+  
+  img.addEventListener('mousemove', event => {
+    const {top, left, bottom, right} = img.getBoundingClientRect()
+    transform.translate = [
+      ((event.clientX - left) / (right - left)) * 100,
+      ((event.clientY - top) / (bottom - top)) * 100,
+    ]
+    
+    let posX = event.clientX - 500
+    let posY = event.clientY - 300
+    
+    const magnifierWidth = 200
+    const magnifierHeight = 200
+    
+    posX = Math.max(10, Math.min(posX, window.innerWidth - magnifierWidth - 10))
+    posY = Math.max(10, Math.min(posY, window.innerHeight - magnifierHeight - 10))
+    
+    magnifierEl.style = `display: block; top: ${posY}px; left: ${posX}px;`
+    setTransformStyle(magnifierImg, transform)
+  })
+  
+  img.addEventListener('mouseleave', () => {
+    magnifierEl.style = 'display: none;'
+  })
+}
+
+const spinHandle = () => {
+  if (dailyState.spinsRemaining <= 0) {
+    showAlert('Open your capsule and guess the price!');
+    return;
+  }
+
+  if (settings.isHandleLocked) return;
+  
+  const crankSound = new Audio('SFX/crank.mp3');
+  crankSound.volume = 0.5;
+  crankSound.play().catch(() => {});
+  
+  settings.isTurningHandle = true;
+  settings.handleRotate = 0;
+  
+  const spinInterval = setInterval(() => {
+    settings.handleRotate += 12;
+    setStyles({ el: elements.handle, deg: settings.handleRotate });
+    
+    if (settings.handleRotate >= 360) {
+      clearInterval(spinInterval);
+      release();
+      settings.isTurningHandle = false;
+      dailyState.spinsRemaining = Math.max(0, dailyState.spinsRemaining - 1);
+      saveDailyState();
+    }
+  }, 30);
+};
+
+function bindControls() {
+  elements.handle.addEventListener('click', spinHandle);
+  elements.circle.addEventListener('click', spinHandle);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '9') {
+      const challengeActive = document.getElementById('challenge-overlay').classList.contains('active');
+      const revealActive = document.getElementById('reveal-overlay').classList.contains('active');
+      const alertActive = document.getElementById('alert-overlay').classList.contains('active');
+      if (!challengeActive && !revealActive && !alertActive) {
+        shake();
+      }
+    }
+  });
+
+  const searchInput = document.getElementById('collection-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const items = document.querySelectorAll('.collected-item');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+  }
+
+  document.getElementById('challenge-overlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('challenge-overlay')) closeChallenge();
+  });
+
+  document.getElementById('challenge-submit').addEventListener('click', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('challenge-guess-input');
+    const guess = parseFloat(input.value);
+    if (!isNaN(guess) && guess > 0 && dailyState.guessesLeft > 0) {
+      checkGuess(guess);
+      input.value = '';
+    }
+  });
+
+  document.getElementById('challenge-guess-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('challenge-submit').click();
+    }
+  });
+
+  document.getElementById('challenge-guess-input').addEventListener('keydown', (e) => {
+    const input = document.getElementById('challenge-guess-input');
+    const current = parseFloat(input.value) || 0;
+    
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      input.value = (current + 0.50).toFixed(2);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const newVal = current - 0.50;
+      input.value = (newVal < 0 ? 0 : newVal).toFixed(2);
+    }
+  });
+
+  document.querySelectorAll('.challenge-keypad-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const num = btn.dataset.num;
+      const input = document.getElementById('challenge-guess-input');
+      
+      if (num === 'delete') {
+        input.value = input.value.slice(0, -1);
+      } else if (num === '.') {
+        if (!input.value.includes('.')) {
+          input.value += '.';
+        }
+      } else {
+        input.value += num;
+      }
+      input.focus();
+    });
+  });
+
+  document.getElementById('alert-btn').addEventListener('click', closeAlert);
+}
+
+loadCSV();
+loadFromCache();
+loadDailyState();
+
+setTimeout(() => {
+  const tutorialModal = document.getElementById('tutorial-modal');
+  if (tutorialModal) {
+    tutorialModal.classList.add('active');
+  }
+}, 300);
+
+const closeTutorial = document.getElementById('close-tutorial');
+const tutorialModal = document.getElementById('tutorial-modal');
+if (closeTutorial && tutorialModal) {
+  closeTutorial.addEventListener('click', () => {
+    tutorialModal.classList.remove('active');
+  });
+  tutorialModal.addEventListener('click', (e) => {
+    if (e.target === tutorialModal) {
+      tutorialModal.classList.remove('active');
+    }
+  });
+}
+
+const howToPlayBtn = document.getElementById('gacha-how-to-play');
+if (howToPlayBtn) {
+  howToPlayBtn.addEventListener('click', () => {
+    const tutorialModal = document.getElementById('tutorial-modal');
+    if (tutorialModal) {
+      tutorialModal.classList.add('active');
+    }
+  });
+}
+</script>
+</body>
+</html>
